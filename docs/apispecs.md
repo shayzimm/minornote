@@ -1,6 +1,6 @@
 # API Endpoints
 
-## User Authentication
+## Users
 
 - **Register a new user**
   - **URL:** `/register`
@@ -147,7 +147,7 @@
       }
       ```
 
-## Blog Posts Management
+## Posts
 
 - **Create a new blog post**
   - **URL:** `/posts`
@@ -284,7 +284,7 @@
       }
       ```
 
-## Comments Management
+## Comments
 
 - **Add a comment to a post**
   - **URL:** `/posts/{id}/comments`
@@ -328,7 +328,7 @@
       }
       ```
 
-## Tags Management
+## Tags
 
 - **Retrieve posts by tag**
   - **URL:** `/tags/{tag}/posts`
