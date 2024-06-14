@@ -356,7 +356,7 @@
       }
       ```
 
-### Error Handling
+## Error Handling
 
 - **404 Not Found**
   - **Response:**
