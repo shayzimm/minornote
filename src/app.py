@@ -53,6 +53,12 @@ class Comment(db.Model):
     # user_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('users.id'))
     # post_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('posts.id'))
     date_created: Mapped[date]
+
+class Tag(db.Model):
+    __tablename__ = 'tags'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(50), unique=True)
     
 @app.cli.command('db_create')
 def db_create():
@@ -120,13 +126,26 @@ def db_create():
         )
     ]
 
+    tags = [
+        Tag(
+            name='testtag'
+        ),
+        Tag(
+            name='testtag2'
+        ),
+        Tag(
+            name='testtag3'
+        )
+    ]
+
     db.session.add_all(users)
     db.session.add_all(posts)
     db.session.add_all(comments)
+    db.session.add_all(tags)
 
     db.session.commit()
 
-    print('Users, Posts, Comments added')
+    print('Users, Posts, Comments, Tags added')
 
 @app.route('/users')
 def all_users():
