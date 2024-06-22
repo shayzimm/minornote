@@ -42,6 +42,16 @@ class Post(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(120))
     content: Mapped[Optional[str]] = mapped_column(Text())
+    # user_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('users.id'))
+    date_created: Mapped[date]
+
+class Comment(db.Model):
+    __tablename__ = 'comments'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    content: Mapped[str] = mapped_column(Text())
+    # user_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('users.id'))
+    # post_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('posts.id'))
     date_created: Mapped[date]
     
 @app.cli.command('db_create')
@@ -95,12 +105,28 @@ def db_create():
         )
     ]
 
+    comments = [
+        Comment(
+            content='testcomment',
+            date_created=date.today()
+        ),
+        Comment(
+            content='testcomment2',
+            date_created=date.today()
+        ),
+        Comment(
+            content='testcomment3',
+            date_created=date.today()
+        )
+    ]
+
     db.session.add_all(users)
     db.session.add_all(posts)
+    db.session.add_all(comments)
 
     db.session.commit()
 
-    print('Users and Posts added')
+    print('Users, Posts, Comments added')
 
 @app.route('/users')
 def all_users():
