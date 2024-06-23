@@ -1,5 +1,5 @@
 from datetime import date
-from flask import Flask
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import String, Text, Boolean
@@ -26,6 +26,10 @@ bcrypt = Bcrypt(app)
 class UserSchema(ma.Schema):
     class Meta:
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_admin')
+
+class PostSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'title', 'content', 'date_created')
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -72,7 +76,7 @@ def db_create():
         User(
             username='testuser',
             email='testemail@test.com',
-            password=bcrypt.generate_password_hash('testpassword'),
+            password=bcrypt.generate_password_hash('testpassword').decode('utf8'),
             first_name='testuserfirst',
             last_name='testuserlast',
             is_admin=True
@@ -80,7 +84,7 @@ def db_create():
         User(
             username='testuser2',
             email='testemail2@test.com',
-            password=bcrypt.generate_password_hash('testpassword'),
+            password=bcrypt.generate_password_hash('testpassword').decode('utf8'),
             first_name='testuserfirst2',
             last_name='testuserlast2',
             is_admin=False
@@ -88,7 +92,7 @@ def db_create():
         User(
             username='testuser3',
             email='testemail3@test.com',
-            password=bcrypt.generate_password_hash('testpassword'),
+            password=bcrypt.generate_password_hash('testpassword').decode('utf8'),
             first_name='testuserfirst3',
             last_name='testuserlast3',
             is_admin=False
@@ -161,10 +165,35 @@ def one_user(id):
     user = db.get_or_404(User, id)
     return UserSchema().dump(user)
 
+@app.route('/posts')
+def all_posts():
+    # select * from posts;
+    stmt = db.select(Post)
+    posts = db.session.scalars(stmt).all()
+    return PostSchema(many=True).dump(posts)
+
+@app.route('/posts/<int:id>')
+def one_post(id):
+    post = db.get_or_404(Post, id)
+    return PostSchema().dump(post)
+
+@app.route('/users/login', methods=['POST'])
+def login():
+    email = request.json['email']
+    password = request.json['password']
+    stmt = db.select(User).where(User.email == email)
+    user = db.session.scalar(stmt)
+    if user and user.password == bcrypt.check_password_hash(user.password, password):
+        return 'ok'
+    else:
+        return {'error': 'Invalid email or password'}, 401
+
+
 @app.route("/")
 def index():
     return "MinorNote"
 
+@app.errorhandler(405)
 @app.errorhandler(404)
 def not_found(err):
     return {'error': 'Not Found'}
