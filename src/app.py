@@ -183,7 +183,7 @@ def login():
     password = request.json['password']
     stmt = db.select(User).where(User.email == email)
     user = db.session.scalar(stmt)
-    if user and user.password == bcrypt.check_password_hash(user.password, password):
+    if user and bcrypt.check_password_hash(user.password, password):
         return 'ok'
     else:
         return {'error': 'Invalid email or password'}, 401
