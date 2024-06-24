@@ -4,7 +4,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String, Text
 from init import db, ma
 
-
 class Comment(db.Model):
     __tablename__ = "comments"
 
