@@ -1,74 +1,14 @@
-from datetime import date, timedelta
-from flask import Flask, request
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Text, Boolean
-from typing import Optional
-from flask_marshmallow import Marshmallow
-from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from marshmallow.exceptions import ValidationError
 from functools import wraps
-from os import environ
+from datetime import date, timedelta
+from flask import request
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from marshmallow.exceptions import ValidationError
+from models.user import User, UserSchema
+from models.post import Post, PostSchema
+from models.comment import Comment, CommentSchema
+from models.tag import Tag, TagSchema
+from init import db, app, bcrypt
 
-class Base(DeclarativeBase):
-    pass
-
-app = Flask(__name__)
-
-app.config['JWT_SECRET_KEY'] = environ.get('JWT_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_KEY')
-
-db = SQLAlchemy(model_class=Base)
-db.init_app(app)
-ma = Marshmallow(app)
-bcrypt = Bcrypt(app)
-jwt = JWTManager(app)
-
-class User(db.Model):
-    __tablename__ = 'users'
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    username: Mapped[str] = mapped_column(String(80), unique=True)
-    email: Mapped[str] = mapped_column(String(120), unique=True)
-    password: Mapped[str] = mapped_column(String(200))
-    first_name: Mapped[str] = mapped_column(String(50))
-    last_name: Mapped[str] = mapped_column(String(50))
-    is_admin: Mapped[bool] = mapped_column(Boolean(), server_default='false')
-
-# Marshmallow schema
-# Used to serialize and/or validate SQLAlchemy models
-class UserSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name', 'is_admin')
-
-class Post(db.Model):
-    __tablename__ = 'posts'
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(120))
-    content: Mapped[Optional[str]] = mapped_column(Text())
-    # user_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('users.id'))
-    date_created: Mapped[date]
-
-class PostSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'title', 'content', 'date_created')
-
-class Comment(db.Model):
-    __tablename__ = 'comments'
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    content: Mapped[str] = mapped_column(Text())
-    # user_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('users.id'))
-    # post_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('posts.id'))
-    date_created: Mapped[date]
-
-class Tag(db.Model):
-    __tablename__ = 'tags'
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(50), unique=True)
     
 @app.cli.command('db_create')
 def db_create():
