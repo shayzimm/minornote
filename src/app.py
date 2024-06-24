@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -6,12 +6,16 @@ from sqlalchemy import String, Text, Boolean
 from typing import Optional
 from flask_marshmallow import Marshmallow
 from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from marshmallow.exceptions import ValidationError
+from functools import wraps
 
 class Base(DeclarativeBase):
     pass
 
 app = Flask(__name__)
 
+app.config['JWT_SECRET_KEY'] = 'secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     'postgresql+psycopg2://minornote_dev:Dagger01!@localhost:5432/minornote'
 )
@@ -20,16 +24,7 @@ db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
-
-# Marshmallow schema
-# Used to serialize and/or validate SQLAlchemy models
-class UserSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_admin')
-
-class PostSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'title', 'content', 'date_created')
+jwt = JWTManager(app)
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -42,6 +37,12 @@ class User(db.Model):
     last_name: Mapped[str] = mapped_column(String(50))
     is_admin: Mapped[bool] = mapped_column(Boolean(), server_default='false')
 
+# Marshmallow schema
+# Used to serialize and/or validate SQLAlchemy models
+class UserSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name', 'is_admin')
+
 class Post(db.Model):
     __tablename__ = 'posts'
 
@@ -50,6 +51,10 @@ class Post(db.Model):
     content: Mapped[Optional[str]] = mapped_column(Text())
     # user_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('users.id'))
     date_created: Mapped[date]
+
+class PostSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'title', 'content', 'date_created')
 
 class Comment(db.Model):
     __tablename__ = 'comments'
@@ -153,9 +158,23 @@ def db_create():
 
     print('Users, Posts, Comments, Tags added')
 
+def admin_only(fn):
+    @wraps(fn)
+    @jwt_required()
+    def inner():
+        user_id = get_jwt_identity()
+        stmt = db.select(User).where(User.id == user_id, User.is_admin)
+        user = db.session.scalar(stmt)
+        if user:
+            return fn()
+        else:
+            return {'error': 'You must be an admin to access this resource'}, 403
+        
+    return inner
+
 @app.route('/users')
+@admin_only
 def all_users():
-    # select * from users;
     stmt = db.select(User)
     users = db.session.scalars(stmt).all()
     return UserSchema(many=True).dump(users)
@@ -165,9 +184,22 @@ def one_user(id):
     user = db.get_or_404(User, id)
     return UserSchema().dump(user)
 
+@app.route('/users/login', methods=['POST'])
+def login():
+    # email = request.json['email']
+    # password = request.json['password']
+    params = UserSchema(only=['email', 'password']).load(request.json)
+    stmt = db.select(User).where(User.email == params['email'])
+    user = db.session.scalar(stmt)
+    if user and bcrypt.check_password_hash(user.password, params['password']):
+        token = create_access_token(identity=user.id, expires_delta=timedelta(hours=2))
+        return {'token': token}
+    else:
+        return {'error': 'Invalid email or password'}, 401
+
 @app.route('/posts')
+@admin_only
 def all_posts():
-    # select * from posts;
     stmt = db.select(Post)
     posts = db.session.scalars(stmt).all()
     return PostSchema(many=True).dump(posts)
@@ -177,18 +209,6 @@ def one_post(id):
     post = db.get_or_404(Post, id)
     return PostSchema().dump(post)
 
-@app.route('/users/login', methods=['POST'])
-def login():
-    email = request.json['email']
-    password = request.json['password']
-    stmt = db.select(User).where(User.email == email)
-    user = db.session.scalar(stmt)
-    if user and bcrypt.check_password_hash(user.password, password):
-        return 'ok'
-    else:
-        return {'error': 'Invalid email or password'}, 401
-
-
 @app.route("/")
 def index():
     return "MinorNote"
@@ -197,3 +217,7 @@ def index():
 @app.errorhandler(404)
 def not_found(err):
     return {'error': 'Not Found'}
+
+@app.errorhandler(ValidationError)
+def invalid_request(err):
+    return {"error": vars(err)['messages']}
