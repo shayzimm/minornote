@@ -13,6 +13,13 @@ class Post(db.Model):
     # user_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('users.id'))
     date_created: Mapped[date]
 
+    # user: Mapped['User'] = relationship('User', back_populates='posts')
+    # comments: Mapped[List['Comment']] = relationship('Comment', back_populates='post')
+    # tags: Mapped[List['Tag']] = relationship('Tag', secondary='post_tags', back_populates='posts')
+
+    # def __repr__(self):
+    #     return f'<Post {self.title}>'
+
 class PostSchema(ma.Schema):
     class Meta:
         fields = ('id', 'title', 'content', 'date_created')

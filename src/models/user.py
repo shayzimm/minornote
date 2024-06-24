@@ -13,6 +13,12 @@ class User(db.Model):
     last_name: Mapped[str] = mapped_column(String(50))
     is_admin: Mapped[bool] = mapped_column(Boolean(), server_default='false')
 
+    # posts: Mapped[List['Post']] = relationship('Post', back_populates='user')
+    # comments: Mapped[List['Comment']] = relationship('Comment', back_populates='user')
+
+    # def __repr__(self):
+    #     return f'<User {self.username}>'
+
 # Marshmallow schema
 # Used to serialize and/or validate SQLAlchemy models
 class UserSchema(ma.Schema):
