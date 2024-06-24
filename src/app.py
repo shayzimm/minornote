@@ -9,16 +9,15 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 from functools import wraps
+from os import environ
 
 class Base(DeclarativeBase):
     pass
 
 app = Flask(__name__)
 
-app.config['JWT_SECRET_KEY'] = 'secret'
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    'postgresql+psycopg2://minornote_dev:Dagger01!@localhost:5432/minornote'
-)
+app.config['JWT_SECRET_KEY'] = environ.get('JWT_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_KEY')
 
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
