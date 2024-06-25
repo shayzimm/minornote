@@ -68,15 +68,21 @@ def db_create():
     comments = [
         Comment(
             content='testcomment',
-            date_created=date.today()
+            date_created=date.today(), 
+            user=users[0],
+            post=posts[2]
         ),
         Comment(
             content='testcomment2',
-            date_created=date.today()
+            date_created=date.today(),
+            user=users[1],
+            post=posts[0]
         ),
         Comment(
             content='testcomment3',
-            date_created=date.today()
+            date_created=date.today(),
+            user=users[2],
+            post=posts[1]
         )
     ]
 

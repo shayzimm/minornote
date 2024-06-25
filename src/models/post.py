@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Optional
+from typing import Optional, List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Text, ForeignKey
 from marshmallow import fields
@@ -16,7 +16,7 @@ class Post(db.Model):
     date_created: Mapped[date]
 
     user: Mapped['User'] = relationship('User', back_populates='posts')
-    # comments: Mapped[List['Comment']] = relationship('Comment', back_populates='post')
+    comments: Mapped[List['Comment']] = relationship('Comment', back_populates='post')
     # tags: Mapped[List['Tag']] = relationship('Tag', secondary='post_tags', back_populates='posts')
 
     # def __repr__(self):
@@ -25,5 +25,7 @@ class Post(db.Model):
 class PostSchema(ma.Schema):
     title = fields.String(required=True, validate=Length(min=5, error="Title must be at least 5 characters"))
     user = fields.Nested('UserSchema', exclude=['password'])
+    # comments = fields.Nested('CommentSchema')
+
     class Meta:
         fields = ('id', 'title', 'content', 'user', 'date_created')
