@@ -1,6 +1,8 @@
+from typing import List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Boolean
-from typing import List
+from marshmallow import fields
+from marshmallow.validate import Length
 from init import db, ma
 
 class User(db.Model):
@@ -23,5 +25,8 @@ class User(db.Model):
 # Marshmallow schema
 # Used to serialize and/or validate SQLAlchemy models
 class UserSchema(ma.Schema):
+    email = fields.Email(required=True)
+    password = fields.String(validate=Length(min=8), required=True)
+
     class Meta:
         fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name', 'is_admin')
