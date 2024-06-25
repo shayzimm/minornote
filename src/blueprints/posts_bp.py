@@ -2,7 +2,7 @@ from datetime import date
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.post import Post, PostSchema
-from auth import admin_only
+from auth import admin_only, authorize_owner
 from init import db
 
 posts_bp = Blueprint('posts', __name__, url_prefix='/posts')
@@ -43,6 +43,7 @@ def create_post():
 @jwt_required()
 def update_post(id):
     post = db.get_or_404(Post, id)
+    authorize_owner(post)
     post_info = PostSchema(only=['title', 'content']).load(
         request.json, unknown='exclude'
     )
@@ -56,6 +57,7 @@ def update_post(id):
 @jwt_required()
 def delete_post(id):
     post = db.get_or_404(Post, id)
+    authorize_owner(post)
     db.session.delete(post)
     db.session.commit()
     return {}, 204
