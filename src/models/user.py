@@ -1,5 +1,6 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Boolean
+from typing import List
 from init import db, ma
 
 class User(db.Model):
@@ -13,7 +14,7 @@ class User(db.Model):
     last_name: Mapped[str] = mapped_column(String(50))
     is_admin: Mapped[bool] = mapped_column(Boolean(), server_default='false')
 
-    # posts: Mapped[List['Post']] = relationship('Post', back_populates='user')
+    posts: Mapped[List['Post']] = relationship('Post', back_populates='user')
     # comments: Mapped[List['Comment']] = relationship('Comment', back_populates='user')
 
     # def __repr__(self):

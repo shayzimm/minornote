@@ -1,6 +1,6 @@
 from datetime import date
 from flask import Blueprint, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.post import Post, PostSchema
 from auth import admin_only
 from init import db
@@ -31,6 +31,7 @@ def create_post():
     post = Post(
             title=post_info['title'],
             content=post_info.get('content', ''),
+            user_id=get_jwt_identity(),
             date_created=date.today()
     )
     db.session.add(post)

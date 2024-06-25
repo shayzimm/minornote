@@ -41,20 +41,26 @@ def db_create():
         )
     ]
 
+    db.session.add_all(users)
+    db.session.commit()
+
     posts = [
         Post(
             title='testpost',
             content='testcontent',
+            user=users[0],
             date_created=date.today()
         ),
         Post(
             title='testpost2',
             content='testcontent2',
+            user=users[1],
             date_created=date.today()
         ),
         Post(
             title='testpost3',
             content='testcontent3',
+            user=users[2],
             date_created=date.today()
         )
     ]
@@ -86,7 +92,8 @@ def db_create():
         )
     ]
 
-    db.session.add_all(users)
+
+
     db.session.add_all(posts)
     db.session.add_all(comments)
     db.session.add_all(tags)
