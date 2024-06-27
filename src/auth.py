@@ -8,14 +8,14 @@ from models.user import User
 def admin_only(fn):
     @wraps(fn)
     @jwt_required()
-    def inner():
+    def inner(*args, **kwargs):
         user_id = get_jwt_identity()
         stmt = db.select(User).where(User.id == user_id, User.is_admin)
         user = db.session.scalar(stmt)
         if user:
-            return fn()
+            return fn(*args, **kwargs)
         else:
-            return {'error': 'You must be an admin to access this resource'}, 403
+            return make_response(jsonify(error='You must be an admin to access this resource'), 403)
         
     return inner
 
@@ -23,38 +23,45 @@ def admin_only(fn):
 def owner_only(fn):
     @wraps(fn)
     @jwt_required()
-    def inner():
+    def inner(*args, **kwargs):
         user_id = get_jwt_identity()
         stmt = db.select(User).where(User.id == user_id)
         user = db.session.scalar(stmt)
         if user:
-            return fn()
+            return fn(*args, **kwargs)
         else:
-            return {'error': 'You must be the owner of the resource'}, 403
+            return make_response(jsonify(error='You must be the owner of the resource'), 403)
         
     return inner
 
-def authorize_owner(post):
+# Helper function to authorize the owner of a resource
+def authorize_owner(resource):
     user_id = get_jwt_identity()
-    if user_id != post.user_id:
-        abort(make_response(jsonify(error='You must be the owner of the post to access this resource'), 403))
+    if user_id != resource.user_id:
+        abort(make_response(jsonify(error='You must be the owner of the resource to access this'), 403))
 
 # Route decorator - ensure JWT user is admin or owner of the resource
-def admin_or_owner_only(fn):
-    @wraps(fn)
-    @jwt_required()
-    def inner():
-        user_id = get_jwt_identity()
-        stmt = db.select(User).where(User.id == user_id)
-        user = db.session.scalar(stmt)
-        if user:
-            return fn()
-        else:
-            stmt = db.select(User).where(User.id == user_id, User.is_admin)
-            user = db.session.scalar(stmt)
-            if user:
-                return fn()
+def admin_or_owner_only(resource_model, resource_id_param):
+    def decorator(fn):
+        @wraps(fn)
+        @jwt_required()
+        def inner(*args, **kwargs):
+            user_id = get_jwt_identity()
+            resource_id = kwargs.get(resource_id_param)
+
+            # Fetch the resource
+            resource = db.session.get(resource_model, resource_id)
+
+            if resource and resource.user_id == user_id:
+                return fn(*args, **kwargs)
             else:
-                return {'error': 'You must be the owner of the resource or an admin to access this resource'}, 403
+                # Check if the user is an admin
+                stmt = db.select(User).where(User.id == user_id, User.is_admin)
+                user = db.session.scalar(stmt)
+                if user:
+                    return fn(*args, **kwargs)
+                else:
+                    return make_response(jsonify(error='You must be the owner of the resource or an admin to access this resource'), 403)
         
-    return inner
+        return inner
+    return decorator

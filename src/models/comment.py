@@ -9,8 +9,8 @@ class Comment(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     content: Mapped[str] = mapped_column(Text())
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-    post_id: Mapped[int] = mapped_column(ForeignKey('posts.id'))
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete="CASCADE"))
+    post_id: Mapped[int] = mapped_column(ForeignKey('posts.id', ondelete="CASCADE"))
     date_created: Mapped[date]
 
     user: Mapped['User'] = relationship('User', back_populates='comments')

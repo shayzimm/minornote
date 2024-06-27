@@ -2,7 +2,8 @@ from datetime import date
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.comment import Comment, CommentSchema
-# from auth import admin_or_owner_only, owner_only
+from models.post import Post
+from auth import admin_or_owner_only, owner_only
 from init import db
 
 comments_bp = Blueprint('comments', __name__, url_prefix='/posts')
@@ -26,13 +27,14 @@ def create_comment(post_id):
 
 # Get all comments on a post (R)
 @comments_bp.route('/<int:post_id>/comments', methods=['GET'])
+@jwt_required()
 def get_comments(post_id):
     comments = Comment.query.filter_by(post_id=post_id).all()
     return CommentSchema(many=True).dump(comments), 200
 
 # Update/edit comment (U)
 @comments_bp.route('/<int:post_id>/comments/<int:comment_id>', methods=['PUT', 'PATCH'])
-# @owner_only(Comment, 'comment_id')
+@owner_only
 def update_comment(post_id, comment_id):
     data = request.get_json()
     stmt = db.update(Comment).where(Comment.id == comment_id).values(**data)
@@ -42,7 +44,7 @@ def update_comment(post_id, comment_id):
 
 # Delete a comment (D)
 @comments_bp.route('/<int:post_id>/comments/<int:comment_id>', methods=['DELETE'])
-# @admin_or_owner_only([(Post, 'post_id'), (Comment, 'comment_id')])
+@admin_or_owner_only(Comment, 'id')
 def delete_comment(post_id, comment_id):
     stmt = db.delete(Comment).where(Comment.id == comment_id)
     db.session.execute(stmt)

@@ -12,11 +12,11 @@ class Post(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(120))
     content: Mapped[Optional[str]] = mapped_column(Text())
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete="CASCADE"))
     date_created: Mapped[date]
 
     user: Mapped['User'] = relationship('User', back_populates='posts')
-    comments: Mapped[List['Comment']] = relationship('Comment', back_populates='post')
+    comments: Mapped[List['Comment']] = relationship('Comment', back_populates='post', cascade="all, delete-orphan")
     tags: Mapped[List['Tag']] = relationship('Tag', secondary='post_tags', back_populates='posts')
 
     # def __repr__(self):

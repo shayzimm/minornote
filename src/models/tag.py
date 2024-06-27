@@ -22,6 +22,6 @@ class TagSchema(ma.Schema):
 post_tags = Table(
     'post_tags',
     db.metadata,
-    Column('post_id', Integer, ForeignKey('posts.id'), primary_key=True),
-    Column('tag_id', Integer, ForeignKey('tags.id'), primary_key=True)
+    Column('post_id', Integer, ForeignKey('posts.id', ondelete="CASCADE"), primary_key=True),
+    Column('tag_id', Integer, ForeignKey('tags.id', ondelete="CASCADE"), primary_key=True)
 )

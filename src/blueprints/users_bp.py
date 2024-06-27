@@ -2,7 +2,7 @@ from datetime import timedelta
 from flask import request, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required
 from models.user import User, UserSchema
-from auth import admin_only
+from auth import admin_only, admin_or_owner_only, owner_only
 from init import db, bcrypt
 
 users_bp = Blueprint('users', __name__, url_prefix='/users')
@@ -17,6 +17,7 @@ def all_users():
 
 # Get one user (R)
 @users_bp.route('/<int:id>')
+@jwt_required()
 def one_user(id):
     user = db.get_or_404(User, id)
     return UserSchema().dump(user)
@@ -24,8 +25,6 @@ def one_user(id):
 # Login (C)
 @users_bp.route('/login', methods=['POST'])
 def login():
-    # email = request.json['email']
-    # password = request.json['password']
     params = UserSchema(only=['email', 'password']).load(request.json, unknown='exclude')
     stmt = db.select(User).where(User.email == params['email'])
     user = db.session.scalar(stmt)
@@ -54,7 +53,7 @@ def create_user():
 
 # Update a user (U)
 @users_bp.route('/<int:id>', methods=['PUT', 'PATCH'])
-@jwt_required()
+@owner_only
 def update_user(id):
     user = db.get_or_404(User, id)
     user_info = UserSchema(only=['username', 'email', 'password', 'first_name', 'last_name', 'is_admin']).load(
@@ -69,7 +68,7 @@ def update_user(id):
 
 # Delete a user (D)
 @users_bp.route('/<int:id>', methods=['DELETE'])
-@jwt_required()
+@admin_or_owner_only(User, 'id')
 def delete_user(id):
     user = db.get_or_404(User, id)
     db.session.delete(user)

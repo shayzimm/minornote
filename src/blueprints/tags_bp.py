@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from models.tag import Tag, TagSchema
-# from auth import admin_or_owner_only, owner_only
+from auth import admin_only
 from init import db
 from models.post import PostSchema
 
@@ -9,6 +9,7 @@ tags_bp = Blueprint('tags', __name__)
 
 # Retrieve posts by tag (R)
 @tags_bp.route('/tags/<int:tag_id>/posts', methods=['GET'])
+@jwt_required()
 def get_posts_by_tag(tag_id):
     tag = Tag.query.get_or_404(tag_id)
     posts = tag.posts  # Use the relationship to get all posts associated with the tag
@@ -30,13 +31,14 @@ def create_tag():
 
 # Get all tags (R)
 @tags_bp.route('/tags', methods=['GET'])
+@jwt_required()
 def get_tags():
     tags = Tag.query.all()
     return TagSchema(many=True).dump(tags), 200
 
 # Update/edit tag (U)
 @tags_bp.route('/tags/<int:tag_id>', methods=['PUT', 'PATCH'])
-# @owner_only(Tag, 'tag_id')
+@admin_only
 def update_tag(tag_id):
     data = request.get_json()
     stmt = db.update(Tag).where(Tag.id == tag_id).values(**data)
@@ -46,7 +48,7 @@ def update_tag(tag_id):
 
 # Delete a tag (D)
 @tags_bp.route('/tags/<int:tag_id>', methods=['DELETE'])
-# @admin_or_owner_only(Tag, 'tag_id')
+@admin_only
 def delete_tag(tag_id):
     stmt = db.delete(Tag).where(Tag.id == tag_id)
     db.session.execute(stmt)

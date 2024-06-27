@@ -2,21 +2,22 @@ from datetime import date
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.post import Post, PostSchema
-from auth import admin_only, authorize_owner
+from auth import admin_only, authorize_owner, admin_or_owner_only
 from init import db
 
 posts_bp = Blueprint('posts', __name__, url_prefix='/posts')
 
-# Get all cards (R)
+# Get all posts (R)
 @posts_bp.route('/')
-@admin_only
+@jwt_required()
 def all_posts():
     stmt = db.select(Post)
     posts = db.session.scalars(stmt).all()
     return PostSchema(many=True).dump(posts)
 
-# Get one card (R)
+# Get one post (R)
 @posts_bp.route('/<int:id>')
+@jwt_required()
 def one_post(id):
     post = db.get_or_404(Post, id)
     return PostSchema().dump(post)
@@ -40,7 +41,7 @@ def create_post():
 
 # Update a post (U)
 @posts_bp.route('/<int:id>', methods=['PUT', 'PATCH'])
-@jwt_required()
+@admin_or_owner_only(Post, 'id')
 def update_post(id):
     post = db.get_or_404(Post, id)
     authorize_owner(post)
@@ -54,10 +55,9 @@ def update_post(id):
 
 # Delete a post (D)
 @posts_bp.route('/<int:id>', methods=['DELETE'])
-@jwt_required()
+@admin_or_owner_only(Post, 'id')
 def delete_post(id):
     post = db.get_or_404(Post, id)
-    authorize_owner(post)
     db.session.delete(post)
     db.session.commit()
     return {}, 204
