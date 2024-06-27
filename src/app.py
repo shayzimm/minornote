@@ -1,12 +1,11 @@
 from marshmallow.exceptions import ValidationError
-# from models.comment import Comment, CommentSchema
-# from models.tag import Tag, TagSchema
+from flask import jsonify
 from init import app
 from blueprints.cli_bp import db_commands
 from blueprints.posts_bp import posts_bp
 from blueprints.users_bp import users_bp
-from blueprints.tags_bp import tags_bp
 from blueprints.comments_bp import comments_bp
+from blueprints.tags_bp import tags_bp
 
 app.register_blueprint(db_commands)
 app.register_blueprint(posts_bp)
@@ -24,8 +23,10 @@ def not_found(err):
     return {'error': 'Not Found'}
 
 @app.errorhandler(ValidationError)
-def invalid_request(err):
-    return {"error": vars(err)['messages']}, 400
+def handle_validation_error(error):
+    response = jsonify(error.messages)
+    response.status_code = 400
+    return response
 
 @app.errorhandler(KeyError)
 def missing_key(err):
