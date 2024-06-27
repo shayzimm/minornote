@@ -1,7 +1,6 @@
 from datetime import date
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models.post import Post
 from models.comment import Comment, CommentSchema
 # from auth import admin_or_owner_only, owner_only
 from init import db

@@ -6,11 +6,13 @@ from blueprints.cli_bp import db_commands
 from blueprints.posts_bp import posts_bp
 from blueprints.users_bp import users_bp
 from blueprints.comments_bp import comments_bp
+from blueprints.tags_bp import tags_bp
 
 app.register_blueprint(db_commands)
 app.register_blueprint(posts_bp)
 app.register_blueprint(users_bp)
 app.register_blueprint(comments_bp)
+app.register_blueprint(tags_bp)
 
 @app.route("/")
 def index():

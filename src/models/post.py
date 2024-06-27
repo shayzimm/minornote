@@ -17,7 +17,7 @@ class Post(db.Model):
 
     user: Mapped['User'] = relationship('User', back_populates='posts')
     comments: Mapped[List['Comment']] = relationship('Comment', back_populates='post')
-    # tags: Mapped[List['Tag']] = relationship('Tag', secondary='post_tags', back_populates='posts')
+    tags: Mapped[List['Tag']] = relationship('Tag', secondary='post_tags', back_populates='posts')
 
     # def __repr__(self):
     #     return f'<Post {self.title}>'
@@ -25,7 +25,8 @@ class Post(db.Model):
 class PostSchema(ma.Schema):
     title = fields.String(required=True, validate=Length(min=5, error="Title must be at least 5 characters"))
     user = fields.Nested('UserSchema', exclude=['password'])
-    # comments = fields.Nested('CommentSchema')
+    comments = fields.Nested('CommentSchema', many=True)
+    tags = fields.Nested('TagSchema', many=True)
 
     class Meta:
-        fields = ('id', 'title', 'content', 'user', 'date_created')
+        fields = ('id', 'title', 'content', 'user', 'comments', 'tags', 'date_created')

@@ -65,6 +65,9 @@ def db_create():
         )
     ]
 
+    db.session.add_all(posts)
+    db.session.commit()
+
     comments = [
         Comment(
             content='testcomment',
@@ -86,6 +89,9 @@ def db_create():
         )
     ]
 
+    db.session.add_all(comments)
+    db.session.commit()
+
     tags = [
         Tag(
             name='testtag'
@@ -98,12 +104,17 @@ def db_create():
         )
     ]
 
-
-
-    db.session.add_all(posts)
-    db.session.add_all(comments)
     db.session.add_all(tags)
+    db.session.commit()
+
+    # Add relationships between posts and tags
+    posts[0].tags.append(tags[0])
+    posts[0].tags.append(tags[1])
+    posts[1].tags.append(tags[1])
+    posts[1].tags.append(tags[2])
+    posts[2].tags.append(tags[0])
+    posts[2].tags.append(tags[2])
 
     db.session.commit()
 
-    print('Users, Posts, Comments, Tags added')
+    print('Users, Posts, Comments, Tags, and relationships added')
