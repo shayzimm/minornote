@@ -86,9 +86,9 @@ In the MinorNote API project, tasks were planned and tracked using a Kanban boar
    - Any necessary changes or improvements were made before tasks were marked as Done.
 
 **Proof of Usage**:
-The thorough usage of the Kanban board can be seen throughout the project. Every task, from initial setup, was tracked using Trello. The board provides a comprehensive view of the project’s workflow, showcasing the diligent planning and tracking involved in the development of the MinorNote API.
+The usage of the Kanban board can be seen throughout the project. Every task, from initial setup, was tracked using Trello. The board provides a comprehensive view of the project’s workflow, showcasing the planning and tracking involved in the development of MinorNote.
 
-You can view the detailed Kanban board used for the project [here](https://trello.com/b/yourkanbanboardlink).
+You can view the Kanban board used for the project [here](https://trello.com/invite/b/5LMBpS52/ATTIe9d6d662e94ae1cba29b55fc075a77b1711AC91E/minornote).
 
 ### R3: Third-Party Services, Packages, and Dependencies
 
