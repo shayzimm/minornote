@@ -1,7 +1,7 @@
 from datetime import date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Text, ForeignKey
-from marshmallow import fields
+from marshmallow import fields, validate
 from init import db, ma
 
 class Comment(db.Model):
@@ -20,6 +20,12 @@ class Comment(db.Model):
     #     return f'<Comment {self.content[:20]}>'
 
 class CommentSchema(ma.Schema):
+    id = fields.Int(dump_only=True)
+    content = fields.Str(required=True, validate=validate.Length(min=1))
+    user_id = fields.Int(required=True)
+    post_id = fields.Int(required=True)
+    date_created = fields.DateTime(dump_only=True)
     user = fields.Nested('UserSchema', exclude=['password'])
+    
     class Meta:
-        fields = ("id", "content", "user", "date_created")
+        fields = ("id", "content", "user_id", "post_id", "user", "date_created")
