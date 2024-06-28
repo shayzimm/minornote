@@ -1,20 +1,32 @@
-# MinorNote API
+# MinorNote
 
 ## Introduction
 
-Web servers can come in many shapes and contain different levels of complexity. At their core, they always involve server concepts such as routing, and handling the communication of data between users and a data storage medium.
+**MinorNote** is a microblogging platform API that provides functionality for user authentication, blog post management, commenting, and tagging. It is built using Flask and SQLAlchemy, and it aims to offer a secure and scalable solution for microblogging needs.
 
-To solidify your knowledge of core web server concepts and show your ability to work with web servers at a fundamental level, you should be able to write code to create a functioning web API server.
+## Table of Contents
 
-## Brief
-
-In order to demonstrate your understanding of fundamental programming concepts and database design, you are required to develop an API that works with a database, implementing functionality suitable for a realistic API concept.
-
-## Documentation Requirements
+- [MinorNote](#minornote)
+  - [Introduction](#introduction)
+  - [Table of Contents](#table-of-contents)
+    - [R1: Problem and Solution](#r1-problem-and-solution)
+    - [R2: Task Allocation and Tracking](#r2-task-allocation-and-tracking)
+    - [R3: Third-Party Services, Packages, and Dependencies](#r3-third-party-services-packages-and-dependencies)
+    - [R4: Benefits and Drawbacks of PostgreSQL](#r4-benefits-and-drawbacks-of-postgresql)
+    - [R5: Features and Functionalities of SQLAlchemy](#r5-features-and-functionalities-of-sqlalchemy)
+    - [R6: Entity Relationship Diagram (ERD)](#r6-entity-relationship-diagram-erd)
+    - [R7: Models and Their Relationships](#r7-models-and-their-relationships)
+    - [R8: API Endpoints](#r8-api-endpoints)
+      - [Users](#users)
+      - [Posts](#posts)
+      - [Comments](#comments)
+      - [Tags](#tags)
+    - [Help Documentation](#help-documentation)
+    - [Final ERD](#final-erd)
 
 ### R1: Problem and Solution
 
-**Purpose and Goal of the Developed Application**
+**Purpose and Goal**
 
 **Problem**:
 Microblogging platforms are immensely popular due to their ability to provide quick and easy content sharing, community building, and user interaction. However, many of these platforms lack certain features that can significantly enhance user experience and content management. Common issues include:
@@ -384,8 +396,6 @@ class Example(Base):
 ```
 
 ### R6: Entity Relationship Diagram (ERD)
-
-### R6: Plan for Normalised Database Relations
 
 **Entity Relationship Diagram (ERD)**
 
@@ -1317,3 +1327,11 @@ The MinorNote API project models are designed with clear relationships that faci
        "error": "Unauthorized"
      }
      ```
+
+### Help Documentation
+
+Can be found [here](docs/help.md)
+
+### Final ERD
+
+Can be found [here](docs/minornote_erd.pdf)
