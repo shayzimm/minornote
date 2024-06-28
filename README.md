@@ -1248,7 +1248,7 @@ The MinorNote API project models are designed with clear relationships that faci
 
      ```json
      {
-       "error": "Unauthorized"
+       "error": "Validation errors"
      }
      ```
 
