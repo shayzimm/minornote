@@ -929,6 +929,15 @@ The MinorNote API project models are designed with clear relationships that faci
      }
      ```
 
+   - **Failure Response** (HTTP 400):
+
+     ```json
+     {
+       "error": "Validation errors"
+     }
+     ```
+
+
 4. **Update Post**
    - **HTTP Verb**: PUT/PATCH
    - **Route Path**: `/posts/<int:id>`
@@ -964,6 +973,14 @@ The MinorNote API project models are designed with clear relationships that faci
      ```json
      {
        "error": "Unauthorized"
+     }
+     ```
+
+   - **Failure Response** (HTTP 400):
+
+     ```json
+     {
+       "error": "Validation errors"
      }
      ```
 
