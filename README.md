@@ -1046,6 +1046,14 @@ The MinorNote API project models are designed with clear relationships that faci
      }
      ```
 
+   - **Failure Response** (HTTP 400):
+
+     ```json
+     {
+       "error": "Validation errors"
+     }
+     ```
+
 2. **Get All Comments on a Post**
    - **HTTP Verb**: GET
    - **Route Path**: `/posts/<int:post_id>/comments`
@@ -1110,6 +1118,14 @@ The MinorNote API project models are designed with clear relationships that faci
      ```json
      {
        "error": "Unauthorized"
+     }
+     ```
+
+   - **Failure Response** (HTTP 400):
+
+     ```json
+     {
+       "error": "Validation errors"
      }
      ```
 

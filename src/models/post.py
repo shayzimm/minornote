@@ -28,11 +28,11 @@ class Post(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(120))
     content: Mapped[Optional[str]] = mapped_column(Text())
+    # A user can create multiple posts, thanks to the user_id foreign key
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete="CASCADE"))
     date_created: Mapped[date]
 
     # Define relationships to other tables
-    # A user can create multiple posts, thanks to the user_id foreign key in the Post model and the relationship function linking the Post model back to the User model.
     user: Mapped['User'] = relationship('User', back_populates='posts')
     # A post can have multiple comments
     comments: Mapped[List['Comment']] = relationship('Comment', back_populates='post', cascade="all, delete-orphan")
