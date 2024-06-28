@@ -1,6 +1,7 @@
 from typing import List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Table, ForeignKey, Integer, Column
+from marshmallow import fields, validate
 from init import db, ma
 
 class Tag(db.Model):
@@ -15,6 +16,9 @@ class Tag(db.Model):
 #         return f'<Tag {self.name}>'
 
 class TagSchema(ma.Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str(required=True, validate=validate.Length(min=1, max=50))
+
     class Meta:
         fields = ('id', 'name')
 

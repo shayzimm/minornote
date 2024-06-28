@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from marshmallow import ValidationError
 from models.tag import Tag, TagSchema
 from auth import admin_only
 from init import db
@@ -19,38 +20,44 @@ def get_posts_by_tag(tag_id):
 @tags_bp.route('/tags', methods=['POST'])
 @jwt_required()
 def create_tag():
-    tag_info = TagSchema(only=['name']).load(
-        request.json, unknown='exclude'
-    )
+    try:
+        tag_info = TagSchema(only=['name']).load(request.json, unknown='exclude')
+    except ValidationError as err:
+        return jsonify(err.messages), 400
+
     tag = Tag(
         name=tag_info.get('name')
     )
     db.session.add(tag)
     db.session.commit()
-    return TagSchema().dump(tag), 201
+    return jsonify(TagSchema().dump(tag)), 201
 
 # Get all tags (R)
 @tags_bp.route('/tags', methods=['GET'])
 @jwt_required()
 def get_tags():
     tags = Tag.query.all()
-    return TagSchema(many=True).dump(tags), 200
+    return jsonify(TagSchema(many=True).dump(tags)), 200
 
 # Update/edit tag (U)
 @tags_bp.route('/tags/<int:tag_id>', methods=['PUT', 'PATCH'])
 @admin_only
 def update_tag(tag_id):
-    data = request.get_json()
-    stmt = db.update(Tag).where(Tag.id == tag_id).values(**data)
-    db.session.execute(stmt)
+    tag = db.get_or_404(Tag, tag_id)
+    try:
+        tag_info = TagSchema(only=['name']).load(request.json, unknown='exclude')
+    except ValidationError as err:
+        return jsonify(err.messages), 400
+
+    tag.name = tag_info.get('name', tag.name)
     db.session.commit()
-    return {'message': 'Tag updated successfully'}, 200
+    return jsonify({'message': 'Tag updated successfully'}), 200
 
 # Delete a tag (D)
 @tags_bp.route('/tags/<int:tag_id>', methods=['DELETE'])
 @admin_only
 def delete_tag(tag_id):
-    stmt = db.delete(Tag).where(Tag.id == tag_id)
-    db.session.execute(stmt)
+    tag = db.get_or_404(Tag, tag_id)
+    db.session.delete(tag)
     db.session.commit()
-    return {'message': 'Tag deleted successfully'}, 200
+    return jsonify({'message': 'Tag deleted successfully'}), 200
