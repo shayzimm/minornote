@@ -23,62 +23,33 @@
       - [Tags](#tags)
     - [Help Documentation](#help-documentation)
     - [Final ERD](#final-erd)
+    - [References](#references)
 
 ### R1: Problem and Solution
 
-**Purpose and Goal**
-
-**Problem**:
 Microblogging platforms are immensely popular due to their ability to provide quick and easy content sharing, community building, and user interaction. However, many of these platforms lack certain features that can significantly enhance user experience and content management. Common issues include:
 
-1. **Limited Categorisation Options**: Many microblogging platforms do not provide robust tagging systems that allow users to categorise their posts effectively. This makes content discovery and organisation difficult.
-2. **Inefficient User Authentication**: Secure and efficient user authentication is crucial, yet some platforms have outdated or insecure methods for managing user accounts and sessions.
-3. **Inadequate Comment Management**: User interaction through comments is often poorly managed, leading to a cluttered and unorganized user experience.
-4. **Scalability and Performance**: As user bases grow, platforms often struggle with scalability and performance issues due to inefficient database design and lack of robust backend infrastructure.
+1. Many microblogging platforms do not provide tagging systems that allow users to categorise their posts effectively. This makes content discovery and organisation difficult.
+2. Secure and efficient user authentication is crucial, yet some platforms have outdated or insecure methods for managing user accounts and sessions.
+3. User interaction through comments is often poorly managed, leading to a cluttered and unorganised user experience.
+4. As user bases grow, platforms often struggle with scalability and performance issues due to inefficient database design and lack of sufficient backend infrastructure.
 
-**Objective References and Statistics**:
+According to a 2021 study by Statista, there were over 3.6 billion social media users worldwide, and this number is expected to increase to nearly 4.41 billion by 2025. The sheer volume of users highlights the need for scalable and efficient microblogging platforms.
+A report by DataReportal in 2022 indicated that 54.9% of internet users look for information on brands and products through social networks. This underscores the importance of effective content categorisation and user engagement.
 
-- According to a 2021 study by Statista, there were over 3.6 billion social media users worldwide, and this number is expected to increase to nearly 4.41 billion by 2025. The sheer volume of users highlights the need for scalable and efficient microblogging platforms.
-- A report by DataReportal in 2022 indicated that 54.9% of internet users look for information on brands and products through social networks. This underscores the importance of effective content categorization and user engagement.
-
-**How MinorNote API Addresses the Problem**:
+**How MinorNote Addresses the Problem**:
 
 1. **Robust Tagging System**:
-   - MinorNote provides a powerful tagging system that allows users to categorise their posts with multiple tags. This enhances content discovery and organisation, making it easier for users to find posts of interest.
+   - MinorNote provides a powerful tagging system that allows users to categorise their posts with multiple tags. This enhances content discovery and organisation, making it easier for users to find posts of interest. MinorNote allows each post to be associated with multiple tags. This many-to-many relationship between posts and tags enables users to categorise their posts in multiple ways, making content more accessible and easier to discover. For instance, a user could tag a post with "Technology," "AI," and "Innovation," making it visible under all three categories.
 
 2. **Secure User Authentication**:
-   - The API uses JWT (JSON Web Tokens) for secure user authentication, ensuring that user sessions are managed securely and efficiently. This modern approach to authentication helps prevent unauthorised access and protects user data.
+   - The API uses JWT (JSON Web Tokens) for secure user authentication, ensuring that user sessions are managed securely and efficiently. This approach to authentication helps prevent unauthorised access and protects user data. The use of JWT for user authentication means that each user session is represented by a token, which includes user information and session validity. This approach not only secures user data but also enhances the scalability of the application by reducing the load on the server to maintain user sessions.
 
 3. **Efficient Comment Management**:
-   - The API includes features for managing comments on posts, allowing users to add, edit, and delete comments. This ensures a clean and organised interaction space, enhancing user engagement and satisfaction.
+   - MinorNote includes features for managing comments on posts, allowing users to add, edit, and delete comments. This ensures a clean and organised interaction space, enhancing user engagement and satisfaction. MinorNote provides endpoints for creating, reading, updating, and deleting comments on posts. This CRUD functionality ensures that comments can be managed effectively, preventing clutter and enhancing the user experience. Users can engage in meaningful discussions, knowing that their comments can be managed and moderated appropriately.
 
 4. **Scalability and Performance**:
-   - Built with Flask and SQLAlchemy, MinorNote is designed for scalability. The database is structured with normalised tables to handle large volumes of data efficiently. PostgreSQL, known for its reliability and performance, is used as the database system.
-
-**Detailed Explanation**:
-
-**Robust Tagging System**:
-MinorNote allows each post to be associated with multiple tags. This many-to-many relationship between posts and tags enables users to categorise their posts in multiple ways, making content more accessible and easier to discover. For instance, a user could tag a post with "Technology," "AI," and "Innovation," making it visible under all three categories.
-
-**Secure User Authentication**:
-The use of JWT for user authentication means that each user session is represented by a token, which includes user information and session validity. This approach not only secures user data but also enhances the scalability of the application by reducing the load on the server to maintain user sessions.
-
-**Efficient Comment Management**:
-MinorNote provides endpoints for creating, reading, updating, and deleting comments on posts. This CRUD functionality ensures that comments can be managed effectively, preventing clutter and enhancing the user experience. Users can engage in meaningful discussions, knowing that their comments can be managed and moderated appropriately.
-
-**Scalability and Performance**:
-The choice of PostgreSQL as the database ensures that the application can handle large volumes of data while maintaining high performance. PostgreSQL's advanced features, such as full-text search and JSONB support, provide additional capabilities that enhance the functionality of the API.
-
-By addressing these common issues in microblogging platforms, MinorNote aims to provide a more robust, secure, and user-friendly environment for sharing and discovering content.
-
----
-
-References:
-
-1. Statista. (2021). Number of social media users worldwide from 2017 to 2025 (in billions). Retrieved from [Statista](https://www.statista.com/statistics/278414/number-of-worldwide-social-network-users/).
-2. DataReportal. (2022). Digital 2022: Global Overview Report. Retrieved from [DataReportal](https://datareportal.com/reports/digital-2022-global-overview-report).
-
----
+   - Built with Flask and SQLAlchemy, MinorNote is designed for scalability. The database is structured with normalised tables to handle large volumes of data efficiently. PostgreSQL, known for its reliability and performance, is used as the database system. The choice of PostgreSQL as the database ensures that the application can handle large volumes of data while maintaining high performance. PostgreSQL's advanced features, such as full-text search and JSONB support, provide additional capabilities that enhance the functionality of the API.
 
 ### R2: Task Allocation and Tracking
 
@@ -947,7 +918,6 @@ The MinorNote API project models are designed with clear relationships that faci
      }
      ```
 
-
 4. **Update Post**
    - **HTTP Verb**: PUT/PATCH
    - **Route Path**: `/posts/<int:id>`
@@ -1335,3 +1305,22 @@ Can be found [here](docs/help.md)
 ### Final ERD
 
 Can be found [here](docs/minornote_erd.pdf)
+
+### References
+
+1. Statista. (2021). Number of social media users worldwide from 2017 to 2025 (in billions). Retrieved from [Statista](https://www.statista.com/statistics/278414/number-of-worldwide-social-network-users/).
+2. DataReportal. (2022). Digital 2022: Global Overview Report. Retrieved from [DataReportal](https://datareportal.com/reports/digital-2022-global-overview-report).
+3. Flask. (n.d.). Flask Documentation. Retrieved from [Flask Documentation](https://flask.palletsprojects.com/en/3.0.x/).
+4. SQLAlchemy. (n.d.). SQLAlchemy Documentation. Retrieved from [SQLAlchemy Documentation](https://docs.sqlalchemy.org/en/20/).
+5. Flask-JWT-Extended. (n.d.). Flask-JWT-Extended Documentation. Retrieved from [Flask-JWT-Extended Documentation](https://flask-jwt-extended.readthedocs.io/en/stable/).
+6. Marshmallow. (n.d.). Marshmallow Documentation. Retrieved from [Marshmallow Documentation](https://marshmallow.readthedocs.io/en/stable/).
+7. PostgreSQL. (n.d.). PostgreSQL Documentation. Retrieved from [PostgreSQL Documentation](https://www.postgresql.org/docs/).
+8. Bcrypt. (n.d.). Bcrypt Documentation. Retrieved from [Bcrypt Documentation](https://pypi.org/project/bcrypt/).
+9.  Flask-Bcrypt. (n.d.). Flask-Bcrypt Documentation. Retrieved from [Flask-Bcrypt Documentation](https://flask-bcrypt.readthedocs.io/en/1.0.1/).
+10. Flask-SQLAlchemy. (n.d.). Flask-SQLAlchemy Documentation. Retrieved from [Flask-SQLAlchemy Documentation](https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/).
+11. Atlassian. (n.d.). Kanban Board Overview. Retrieved from [Kanban Board Overview](https://www.atlassian.com/agile/kanban).
+12. RESTful API. (n.d.). REST API Best Practices. Retrieved from [REST API Best Practices](https://restfulapi.net/).
+13. Insomnia. (n.d.). Insomnia Documentation. Retrieved from [Insomnia Documentation](https://docs.insomnia.rest/).
+14. Google Cloud. (n.d.). API Design Guide. Retrieved from [Google Cloud API Design Guide](https://cloud.google.com/apis/design).
+15. Grinberg, M. (n.d.). Flasky. Retrieved from [Flasky](https://github.com/miguelgrinberg/flasky).
+16. Python.org. (n.d.). PEP 8 – Style Guide for Python Code. Retrieved from PEP 8 – Style Guide for Python Code(https://peps.python.org/pep-0008/)
