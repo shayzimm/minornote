@@ -4,16 +4,20 @@ from models.user import User
 from models.post import Post
 from models.comment import Comment
 from models.tag import Tag
-from init import db, app, bcrypt
+from init import db, bcrypt
 
+# Initialise the Blueprint for CLI commands
 db_commands = Blueprint('db', __name__)
 
+# Command to create and populate the database with sample data
 @db_commands.cli.command('create')
 def db_create():
+    # Drop all existing tables and recreate them
     db.drop_all()
     db.create_all()
     print('Created tables')
 
+    # Create sample users
     users = [
         User(
             username='testuser',
@@ -41,9 +45,11 @@ def db_create():
         )
     ]
 
+    # Add the users to the session and commit to the database
     db.session.add_all(users)
     db.session.commit()
 
+    # Create sample posts
     posts = [
         Post(
             title='testpost',
@@ -65,9 +71,11 @@ def db_create():
         )
     ]
 
+    # Add the posts to the session and commit to the database
     db.session.add_all(posts)
     db.session.commit()
 
+    # Create sample comments
     comments = [
         Comment(
             content='testcomment',
@@ -89,9 +97,11 @@ def db_create():
         )
     ]
 
+    # Add the comments to the session and commit to the database
     db.session.add_all(comments)
     db.session.commit()
 
+    # Create sample tags
     tags = [
         Tag(
             name='testtag'
@@ -104,6 +114,7 @@ def db_create():
         )
     ]
 
+    # Add the tags to the session and commit to the database
     db.session.add_all(tags)
     db.session.commit()
 
@@ -115,6 +126,7 @@ def db_create():
     posts[2].tags.append(tags[0])
     posts[2].tags.append(tags[2])
 
+    # Commit the relationships to the database
     db.session.commit()
 
     print('Users, Posts, Comments, Tags, and relationships added')
