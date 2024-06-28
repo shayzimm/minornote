@@ -2,7 +2,7 @@ from datetime import date
 from typing import Optional, List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Text, ForeignKey
-from marshmallow import fields
+from marshmallow import fields, validate
 from marshmallow.validate import Length
 from init import db, ma
 
@@ -23,10 +23,14 @@ class Post(db.Model):
     #     return f'<Post {self.title}>'
 
 class PostSchema(ma.Schema):
-    title = fields.String(required=True, validate=Length(min=5, error="Title must be at least 5 characters"))
+    id = fields.Int(dump_only=True)
+    title = fields.Str(required=True, validate=validate.Length(min=5, error="Title must be at least 5 characters"))
+    content = fields.Str(validate=validate.Length(min=1))
+    user_id = fields.Int(required=True)
+    date_created = fields.DateTime(dump_only=True)
     user = fields.Nested('UserSchema', exclude=['password'])
     comments = fields.Nested('CommentSchema', many=True)
     tags = fields.Nested('TagSchema', many=True)
 
     class Meta:
-        fields = ('id', 'title', 'content', 'user', 'comments', 'tags', 'date_created')
+        fields = ('id', 'title', 'content', 'user_id', 'user', 'comments', 'tags', 'date_created')
