@@ -1,6 +1,6 @@
 # MinorNote API Documentation
 
-Welcome to the MinorNote API documentation. This guide will help you understand how to interact with the API endpoints, including creating, reading, updating, and deleting blog posts, comments, and tags.
+Welcome to the MinorNote API documentation. This guide will help you understand how to interact with the API endpoints, including creating, reading, updating, and deleting users, blog posts, comments, and tags.
 
 ## Introduction
 
@@ -12,7 +12,7 @@ MinorNote is a microblogging platform API that provides functionality for user a
   - [Introduction](#introduction)
   - [Table of Contents](#table-of-contents)
   - [Getting Started](#getting-started)
-    - [Base URL](#base-url)
+    - [Base URL/port](#base-urlport)
     - [Required Headers](#required-headers)
   - [Authentication](#authentication)
     - [Register](#register)
@@ -48,12 +48,11 @@ MinorNote is a microblogging platform API that provides functionality for user a
 
 ## Getting Started
 
-### Base URL
+### Base URL/port
 
 All API endpoints are relative to the base URL:
 
-http://127.0.0.1:5000
-
+[http://127.0.0.1:5000](http://127.0.0.1:5000)
 
 ### Required Headers
 
