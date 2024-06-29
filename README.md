@@ -1365,7 +1365,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
    - Enhance the validation logic to provide more informative and user-friendly error messages.
 
 7. **Testing**
-   - Increase test coverage by adding unit tests, integration tests, and end-to-end tests. This will help ensure the stability and reliability of the application.
+   - Increase test coverage by adding unit tests, integration tests, and end-to-end tests.
 
 8. **Internationalisation**
     - Add support for multiple languages to make the application accessible to a wider audience.
