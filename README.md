@@ -26,6 +26,8 @@
       - [Posts](#posts)
       - [Comments](#comments)
       - [Tags](#tags)
+    - [Known Issues](#known-issues)
+    - [Future Improvements](#future-improvements)
     - [Help Documentation](#help-documentation)
     - [References](#references)
 
@@ -1327,6 +1329,46 @@ Please also see the [help documentation](docs/help.md) for more details on getti
        "error": "Unauthorized"
      }
      ```
+
+### Known Issues
+
+1. **Error Handling**
+   - The current error handling mechanism may be too general and might not catch all specific types of exceptions. This can lead to unclear error messages being returned to the user.
+
+2. **User Authorization**
+   - There may be issues with correctly identifying the owner of a resource in some scenarios, which could lead to unauthorised access or actions being permitted.
+
+3. **Validation Errors**
+   - Validation errors are currently returned as a general JSON response. More specific and user-friendly error messages could improve the user experience.
+
+4. **Concurrency Issues**
+   - The current implementation does not handle concurrent updates or deletes gracefully, which could result in data inconsistency.
+
+### Future Improvements
+
+1. **Error Handling**
+   - Implement more specific error handling to catch and handle various types of exceptions more gracefully.
+
+2. **Role-Based Access Control**
+   - Enhance the authorisation mechanism by implementing a more granular role-based access control system.
+
+3. **Pagination**
+   - Implement pagination for endpoints that return large lists of data, such as posts and comments.
+
+4. **Caching**
+   - Implement caching strategies to reduce database load and improve response times for frequently accessed endpoints.
+
+5. **Search Functionality**
+   - Add search functionality to allow users to search for posts, comments, and tags.
+
+6. **Improved Validation**
+   - Enhance the validation logic to provide more informative and user-friendly error messages.
+
+7. **Testing**
+   - Increase test coverage by adding unit tests, integration tests, and end-to-end tests. This will help ensure the stability and reliability of the application.
+
+8. **Internationalisation**
+    - Add support for multiple languages to make the application accessible to a wider audience.
 
 ### Help Documentation
 
