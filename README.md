@@ -531,7 +531,7 @@ Third Normal Form:
 
 ### R8: API Endpoints
 
-Please also see the [help documentation](docs/help.md) for further details.
+Please also see the [help documentation](docs/help.md) for more details on getting started.
 
 #### Users
 
@@ -541,34 +541,43 @@ Please also see the [help documentation](docs/help.md) for further details.
    - **Required Body Data**:
 
      ```json
-     {
-       "username": "string",
-       "email": "string",
-       "password": "string",
-       "first_name": "string",
-       "last_name": "string"
-     }
+      {
+        "username": "yourusername",
+        "email": "youremail@example.com",
+        "password": "yourpassword",
+        "first_name": "YourFirstName",
+        "last_name": "YourLastName"
+      }
      ```
 
-   - **Success Response** (HTTP 201):
+   - **Success Response** 201 OK:
 
      ```json
-     {
-       "id": 1,
-       "username": "string",
-       "email": "string",
-       "first_name": "string",
-       "last_name": "string",
-       "is_admin": false
-     }
+      {
+        "id": 1,
+        "username": "user1",
+        "email": "user1@example.com",
+        "first_name": "FirstName1",
+        "last_name": "LastName1",
+        "is_admin": false
+      }
      ```
 
-   - **Failure Response** (HTTP 400):
+   - **Failure Response**:
+   - 409 Conflict:
 
      ```json
-     {
-       "error": "User already exists"
-     }
+      {
+        "error": "User already exists"
+      }
+     ```
+
+   - 400 Bad Request:
+
+     ```json
+      {
+        "error": "Validation errors"
+      }
      ```
 
 2. **Login User**
@@ -577,21 +586,22 @@ Please also see the [help documentation](docs/help.md) for further details.
    - **Required Body Data**:
 
      ```json
-     {
-       "email": "string",
-       "password": "string"
-     }
+      {
+        "email": "youremail@example.com",
+        "password": "yourpassword"
+      }
      ```
 
-   - **Success Response** (HTTP 200):
+   - **Success Response** 200 OK:
 
      ```json
-     {
-       "token": "jwt_token"
-     }
+      {
+        "token": "<your_jwt_token>"
+      }
      ```
 
-   - **Failure Response** (HTTP 401):
+   - **Failure Response**:
+   - 401 Unauthorized:
 
      ```json
      {
@@ -599,62 +609,72 @@ Please also see the [help documentation](docs/help.md) for further details.
      }
      ```
 
-3. **Get All Users**
-   - **HTTP Verb**: GET
-   - **Route Path**: `/users/`
-   - **Required Header**:
-  
-     ```txt
-     Authorization: Bearer <token>
-     ```
-
-   - **Success Response** (HTTP 200):
-
-     ```json
-     [
-       {
-         "id": 1,
-         "username": "string",
-         "email": "string",
-         "first_name": "string",
-         "last_name": "string",
-         "is_admin": false
-       },
-       ...
-     ]
-     ```
-
-   - **Failure Response** (HTTP 403):
+   - 400 Bad Request:
 
      ```json
      {
-       "error": "Unauthorized"
+       "error": "Validation errors"
+     }
+     ```
+
+3. **Get All Users**
+   - **HTTP Verb**: GET
+   - **Route Path**: `/users/`
+   - **Required Header**: `Authorization: Bearer <your_jwt_token>` (Admin only)
+
+   - **Success Response** 200 OK:
+
+     ```json
+     [
+      {
+        "id": 1,
+        "username": "user1",
+        "email": "user1@example.com",
+        "first_name": "FirstName1",
+        "last_name": "LastName1",
+        "is_admin": false
+      },
+      ...
+     ]
+     ```
+
+   - **Failure Response**: 
+   - 403 Forbidden:
+
+     ```json
+     {
+       "error": "You must be an admin to access this resource"
+     }
+     ```
+
+   - 400 Unauthorized:
+
+     ```json
+     {
+       "error": "Validation errors"
      }
      ```
 
 4. **Get One User**
    - **HTTP Verb**: GET
    - **Route Path**: `/users/<int:id>`
-   - **Required Header**:
+   - **Required Header**: `Authorization: Bearer <token>`
 
-     ```txt
-     Authorization: Bearer <token>
-     ```
-
-   - **Success Response** (HTTP 200):
+   - **Success Response** 200 OK:
 
      ```json
-     {
-       "id": 1,
-       "username": "string",
-       "email": "string",
-       "first_name": "string",
-       "last_name": "string",
-       "is_admin": false
-     }
+      {
+        "id": 1,
+        "username": "user1",
+        "email": "user1@example.com",
+        "first_name": "FirstName1",
+        "last_name": "LastName1",
+        "is_admin": false
+      }
      ```
 
-   - **Failure Response** (HTTP 404):
+   - **Failure Response**:
+   - 404:
 
      ```json
      {
@@ -662,46 +682,66 @@ Please also see the [help documentation](docs/help.md) for further details.
      }
      ```
 
+   - 400 Unauthorized:
+
+     ```json
+     {
+       "error": "Missing Authorization Header"
+     }
+     ```
+
 5. **Update User**
    - **HTTP Verb**: PUT/PATCH
    - **Route Path**: `/users/<int:id>`
-   - **Required Header**:
-
-     ```txt
-     Authorization: Bearer <token>
-     ```
+   - **Required Header**: `Authorization: Bearer <token>` (Owner only)
 
    - **Required Body Data**:
 
      ```json
-     {
-       "username": "string",
-       "email": "string",
-       "password": "string",
-       "first_name": "string",
-       "last_name": "string",
-       "is_admin": false
-     }
+      {
+        "username": "newusername",
+        "email": "newemail@example.com",
+        "password": "newpassword",
+        "first_name": "NewFirstName",
+        "last_name": "NewLastName"
+      }
      ```
 
-   - **Success Response** (HTTP 200):
+   - **Success Response** 200 OK:
+
+     ```json
+      {
+        "id": 1,
+        "username": "newusername",
+        "email": "newemail@example.com",
+        "first_name": "NewFirstName",
+        "last_name": "NewLastName",
+        "is_admin": false
+      }
+     ```
+
+   - **Failure Response**:
+   - 403 Forbidden:
 
      ```json
      {
-       "id": 1,
-       "username": "string",
-       "email": "string",
-       "first_name": "string",
-       "last_name": "string",
-       "is_admin": false
+       "error": "You must be the owner of the resource to access this"
      }
      ```
 
-   - **Failure Response** (HTTP 403):
+   - 400 Unauthorized:
 
      ```json
      {
-       "error": "Unauthorized"
+       "error": "Validation errors"
+     }
+     ```
+
+   - 409 Conflict:
+
+     ```json
+     {
+       "error": "Username already exists"
      }
      ```
 

@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow import ValidationError
 from models.comment import Comment, CommentSchema
 from models.user import User
-from auth import admin_or_owner_only, owner_only
+from auth import admin_or_owner_only, owner_only, authorize_owner
 from init import db
 
 # Initialise the Blueprint for comment routes
@@ -68,7 +68,7 @@ def get_comments(post_id):
 
 # Route to get all comments by a specific user (R)
 @comments_bp.route('/user/<int:user_id>', methods=['GET'])
-@admin_or_owner_only(User, 'user_id')
+@admin_or_owner_only(User, 'user_id', 'user')
 def comments_by_user(user_id):
     """
     Retrieves all comments by a specific user.
@@ -105,6 +105,7 @@ def update_comment(post_id, comment_id):
     """
     # Retrieve the comment to be updated by ID
     comment = db.get_or_404(Comment, comment_id)
+    authorize_owner(comment, 'comment')
     try:
         # Validate and deserialize the request JSON data
         comment_info = CommentSchema(only=['content']).load(request.json, unknown='exclude')
@@ -121,7 +122,7 @@ def update_comment(post_id, comment_id):
 
 # Delete a comment (D)
 @comments_bp.route('/<int:post_id>/comments/<int:comment_id>', methods=['DELETE'])
-@admin_or_owner_only(Comment, 'comment_id')
+@admin_or_owner_only(Comment, 'comment_id', 'comment')
 def delete_comment(post_id, comment_id):
     """
     Deletes an existing comment.
@@ -136,6 +137,7 @@ def delete_comment(post_id, comment_id):
     """
     # Retrieve the comment to be deleted by ID
     comment = db.get_or_404(Comment, comment_id)
+    authorize_owner(comment, 'comment')
     # Delete the comment from the database
     db.session.delete(comment)
     db.session.commit()

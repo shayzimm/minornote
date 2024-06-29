@@ -1,6 +1,6 @@
 from marshmallow.exceptions import ValidationError
 from flask import jsonify
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from init import app
 from blueprints.cli_bp import db_commands
 from blueprints.posts_bp import posts_bp
@@ -67,7 +67,41 @@ def missing_key(err):
     Returns:
         JSON response with an error message indicating the missing field.
     """
-    return {'error': f'Missing field: {str(err)}'}, 400
+    response = jsonify({"error": f"Missing field: {str(err)}"})
+    response.status_code = 400
+    return response
+
+# Error handler for integrity errors
+@app.errorhandler(IntegrityError)
+def handle_integrity_error(error):
+    """
+    Handles IntegrityError exceptions, typically for database constraints violations.
+
+    Args:
+        error: The IntegrityError object.
+
+    Returns:
+        JSON response with a database error message.
+
+    Raises:
+        None
+
+    Example:
+        ```python
+        from flask import jsonify
+        from sqlalchemy.exc import IntegrityError
+
+        @app.errorhandler(IntegrityError)
+        def handle_integrity_error(error):
+            response = jsonify({"error": "Database error", "message": str(error)})
+            response.status_code = 500
+            return response
+        ```
+    """
+    response = jsonify({"error": "Integrity error", "message": str(error)})
+    response.status_code = 409
+    return response
+
 
 # Error handler for SQLAlchemy errors
 @app.errorhandler(SQLAlchemyError)
@@ -99,6 +133,38 @@ def handle_500_error(error):
     """
     response = jsonify({"error": "Internal Server Error", "message": str(error)})
     response.status_code = 500
+    return response
+
+@app.errorhandler(403)
+def handle_forbidden_error(error):
+    """
+    Handles 403 Forbidden errors.
+
+    Args:
+        error: The error object.
+
+    Returns:
+        JSON response with a forbidden error message.
+
+    Raises:
+        None
+
+    Example:
+        ```python
+        from flask import jsonify
+        from flask.views import MethodView
+
+        class ForbiddenErrorHandler(MethodView):
+            def get(self, error):
+                response = jsonify({"error": "Forbidden", "message": str(error)})
+                response.status_code = 403
+                return response
+
+        app.add_url_rule('/forbidden', view_func=ForbiddenErrorHandler.as_view('forbidden_error_handler'))
+        ```
+    """
+    response = jsonify({"error": "Forbidden", "message": str(error)})
+    response.status_code = 403
     return response
 
 # Print the URL map for debugging purposes

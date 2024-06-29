@@ -2,9 +2,9 @@ from datetime import timedelta
 from flask import request, Blueprint, jsonify
 from flask_jwt_extended import create_access_token, jwt_required
 from marshmallow import ValidationError
-from models.user import User
-from models.user import UserSchema
-from auth import admin_only, admin_or_owner_only, owner_only
+from sqlalchemy.exc import IntegrityError
+from models.user import User, UserSchema
+from auth import admin_only, admin_or_owner_only, owner_only, authorize_owner
 from init import db, bcrypt
 
 # Initialise the Blueprint for user routes
@@ -120,6 +120,10 @@ def create_user():
         # Return validation errors as JSON with status 400
         return jsonify(err.messages), 400
     
+    # Check if the username already exists
+    if db.session.query(User).filter_by(username=user_info['username']).first():
+        return jsonify({'error': 'Username already exists'}), 409
+    
     # Create a new User instance
     user = User(
         username=user_info['username'],
@@ -129,9 +133,15 @@ def create_user():
         last_name=user_info.get('last_name'),
         is_admin=user_info.get('is_admin', False)
     )
-    # Add the new user to the session and commit to the database
-    db.session.add(user)
-    db.session.commit()
+    
+    try:
+        # Add the new user to the session and commit to the database
+        db.session.add(user)
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({'error': 'A user with the given email already exists'}), 409
+    
     # Serialize the new user and return as JSON with status 201
     return jsonify(UserSchema().dump(user)), 201
 
@@ -154,12 +164,19 @@ def update_user(id):
     """
     # Retrieve the user to be updated by ID
     user = db.get_or_404(User, id)
+    # Ensure the current user is the owner of the resource
+    authorize_owner(user, 'user')
     try:
         # Validate and deserialize the request JSON data
         user_info = UserSchema(only=['username', 'email', 'password', 'first_name', 'last_name']).load(request.json, unknown='exclude')
     except ValidationError as err:
         # Return validation errors as JSON with status 400
         return jsonify(err.messages), 400
+    
+    # Check if the new username already exists in the database
+    existing_user = db.session.query(User).filter(User.username == user_info['username'], User.id != id).first()
+    if existing_user:
+        return jsonify({'error': 'Username already exists'}), 409
     
     # Update user attributes if provided
     user.username = user_info.get('username', user.username)
@@ -168,15 +185,21 @@ def update_user(id):
         user.password = bcrypt.generate_password_hash(user_info['password']).decode('utf8')
     user.first_name = user_info.get('first_name', user.first_name)
     user.last_name = user_info.get('last_name', user.last_name)
-    # Commit the changes to the database
-    db.session.commit()
+    
+    try:
+        # Commit the changes to the database
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({'error': 'An error occurred while updating the user'}), 409
+    
     # Serialize the updated user and return as JSON
     return jsonify(UserSchema().dump(user))
 
 # Delete a user (D)
 # /users/<int:id> (DELETE): This endpoint allows a user to delete their account. It requires that the user be either the owner or an admin, enforced by the admin_or_owner_only decorator.
 @users_bp.route('/<int:id>', methods=['DELETE'])
-@admin_or_owner_only(User, 'id')
+@admin_or_owner_only(User, 'id', 'user')
 def delete_user(id):
     """
     Delete a user from the system.
@@ -192,6 +215,8 @@ def delete_user(id):
     """
     # Retrieve the user to be deleted by ID
     user = db.get_or_404(User, id)
+    # Ensure the current user is the owner of the resource
+    authorize_owner(user, 'user')
     # Delete the user from the database
     db.session.delete(user)
     db.session.commit()

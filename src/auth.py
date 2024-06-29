@@ -59,7 +59,7 @@ def owner_only(fn):
     return inner
 
 # Helper function to authorise the owner of a resource
-def authorize_owner(resource):
+def authorize_owner(resource, resource_type):
     """
     Helper function to check if the current user is the owner of the resource.
 
@@ -69,11 +69,15 @@ def authorize_owner(resource):
         resource: The resource to check ownership for.
     """
     user_id = get_jwt_identity()
-    if user_id != resource.user_id:
-        abort(make_response(jsonify(error='You must be the owner of the resource to access this'), 403))
+    if resource_type == 'user':
+        if user_id != resource.id:
+            abort(make_response(jsonify(error='You must be the owner of the resource to access this'), 403))
+    else:
+        if user_id != resource.user_id:
+            abort(make_response(jsonify(error='You must be the owner of the resource to access this'), 403))
 
 # Route decorator - ensure JWT user is admin or owner of the resource
-def admin_or_owner_only(resource_model, resource_id_param):
+def admin_or_owner_only(resource_model, resource_id_param, resource_type):
     """
     Decorator to ensure the user is an admin or the owner of the resource.
 
@@ -97,16 +101,19 @@ def admin_or_owner_only(resource_model, resource_id_param):
             # Fetch the resource
             resource = db.session.get(resource_model, resource_id)
 
-            if resource and resource.user_id == user_id:
+            if resource:
+                if resource_type == 'user' and resource.id == user_id:
+                    return fn(*args, **kwargs)
+                elif resource_type != 'user' and resource.user_id == user_id:
+                    return fn(*args, **kwargs)
+
+            # Check if the user is an admin
+            stmt = db.select(User).where(User.id == user_id, User.is_admin)
+            user = db.session.scalar(stmt)
+            if user:
                 return fn(*args, **kwargs)
             else:
-                # Check if the user is an admin
-                stmt = db.select(User).where(User.id == user_id, User.is_admin)
-                user = db.session.scalar(stmt)
-                if user:
-                    return fn(*args, **kwargs)
-                else:
-                    return make_response(jsonify(error='You must be the owner of the resource or an admin to access this resource'), 403)
+                return make_response(jsonify(error='You must be the owner of the resource or an admin to access this resource'), 403)
         
         return inner
     return decorator

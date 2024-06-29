@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow import ValidationError
 from models.post import Post, PostSchema
 from models.user import User
-from auth import admin_or_owner_only
+from auth import admin_or_owner_only, authorize_owner
 from init import db
 
 # Initialise the Blueprint for post routes
@@ -113,7 +113,7 @@ def create_post():
 
 # Update a post (U)
 @posts_bp.route('/<int:id>', methods=['PUT', 'PATCH'])
-@admin_or_owner_only(Post, 'id')
+@admin_or_owner_only(Post, 'id', 'post')
 def update_post(id):
     """
     Update a post.
@@ -128,6 +128,7 @@ def update_post(id):
     """
     # Retrieve the post to be updated by ID
     post = db.get_or_404(Post, id)
+    authorize_owner(post, 'post')
     try:
         # Validate and deserialize the request JSON data
         post_info = PostSchema(only=['title', 'content']).load(request.json, unknown='exclude')
@@ -145,7 +146,7 @@ def update_post(id):
 
 # Delete a post (D)
 @posts_bp.route('/<int:id>', methods=['DELETE'])
-@admin_or_owner_only(Post, 'id')
+@admin_or_owner_only(Post, 'id', 'post')
 def delete_post(id):
     """
     Delete a post.
@@ -160,6 +161,7 @@ def delete_post(id):
     """
     # Retrieve the post to be deleted by ID
     post = db.get_or_404(Post, id)
+    authorize_owner(post, 'post')
     # Delete the post from the database
     db.session.delete(post)
     db.session.commit()
