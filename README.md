@@ -748,23 +748,28 @@ Please also see the [help documentation](docs/help.md) for more details on getti
 6. **Delete User**
    - **HTTP Verb**: DELETE
    - **Route Path**: `/users/<int:id>`
-   - **Required Header**:
+   - **Required Header**: `Authorization: Bearer <token>` (Owner or admin only)
 
-     ```txt
-     Authorization: Bearer <token>
-     ```
-
-   - **Success Response** (HTTP 204):
+   - **Success Response** 204 No Content:
 
      ```json
      {}
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response**: 
+   - 403 Forbidden:
 
      ```json
      {
-       "error": "Unauthorized"
+       "error": "You must be the owner of the resource or an admin to access this resource"
+     }
+     ```
+
+   - 404 Not Found:
+
+     ```json
+     {
+       "error": "Not Found"
      }
      ```
 
@@ -773,75 +778,61 @@ Please also see the [help documentation](docs/help.md) for more details on getti
 1. **Get All Posts**
    - **HTTP Verb**: GET
    - **Route Path**: `/posts/`
-   - **Required Header**:
+   - **Required Header**: `Authorization: Bearer <token>`
+   - Retrieves all posts from the database
 
-     ```txt
-     Authorization: Bearer <token>
-     ```
-
-   - **Success Response** (HTTP 200):
+   - **Success Response** 200 OK:
 
      ```json
-     [
-       {
-         "id": 1,
-         "title": "string",
-         "content": "string",
-         "user": {
-           "id": 1,
-           "username": "string"
-         },
-         "comments": [
-           ...
-         ],
-         "tags": [
-           ...
-         ],
-         "date_created": "date"
-       },
-       ...
-     ]
+      [
+        {
+          "id": 1,
+          "title": "Post Title",
+          "content": "Post content",
+          "user": {
+            "id": 1,
+            "username": "user1"
+          },
+          "comments": [],
+          "tags": [],
+          "date_created": "2024-06-27"
+        }
+      ]
+      ...
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response** 401 Unauthorized:
 
      ```json
      {
-       "error": "Unauthorized"
+       "error": "Missing Authorization Header"
      }
      ```
 
 2. **Get One Post**
    - **HTTP Verb**: GET
    - **Route Path**: `/posts/<int:id>`
-   - **Required Header**:
+   - **Required Header**: `Authorization: Bearer <token>`
+   - Retrieves a specific post by its ID
 
-     ```txt
-     Authorization: Bearer <token>
-     ```
-
-   - **Success Response** (HTTP 200):
+   - **Success Response** 200 OK:
 
      ```json
-     {
-       "id": 1,
-       "title": "string",
-       "content": "string",
-       "user": {
-         "id": 1,
-         "username": "string"
-       },
-       "comments": [
-         ...
-       ],
-       "tags": [
-         ...
-       ],
-       "date_created": "date"
-     }
+      {
+        "id": 1,
+        "title": "Post Title",
+        "content": "Post content",
+        "user": {
+          "id": 1,
+          "username": "user1"
+        },
+        "comments": [],
+        "tags": [],
+        "date_created": "2024-06-27"
+      }
      ```
 
-   - **Failure Response** (HTTP 404):
+   - **Failure Response** 404 Not Found:
 
      ```json
      {
@@ -849,37 +840,81 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-3. **Create Post**
+3. **Get All Posts By User**
+   - **HTTP Verb**: GET
+   - **Route Path**: `/posts/user/<int:id>`
+   - **Required Header**: `Authorization: Bearer <token>`
+   - Retrieves all posts created by a specific user
+
+   - **Success Response** 200 OK:
+
+     ```json
+      [
+        {
+          "id": 1,
+          "title": "Post Title",
+          "content": "Post content",
+          "user": {
+            "id": 1,
+            "username": "user1"
+          },
+          "comments": [],
+          "tags": [],
+          "date_created": "2024-06-27"
+        }
+      ]
+     ```
+
+   - **Failure Response**:
+   - 404 Not Found:
+
+     ```json
+     {
+       "error": "Post not found"
+     }
+     ```
+
+   - 401 Unauthorized:
+
+     ```json
+     {
+       "error": "Missing Authorization Header"
+     }
+     ```
+
+4. **Create Post**
    - **HTTP Verb**: POST
    - **Route Path**: `/posts/`
-   - **Required Header**:
-
-     ```txt
-     Authorization: Bearer <token>
-     ```
+   - **Required Header**: `Authorization: Bearer <token>`
+   - Creates a new post in the database
 
    - **Required Body Data**:
 
      ```json
-     {
-       "title": "string",
-       "content": "string"
-     }
+      {
+        "title": "New Post Title",
+        "content": "Content of the new post"
+      }
      ```
 
-   - **Success Response** (HTTP 201):
+   - **Success Response** 201 Created:
 
      ```json
-     {
-       "id": 1,
-       "title": "string",
-       "content": "string",
-       "user_id": 1,
-       "date_created": "date"
-     }
+      {
+        "id": 2,
+        "title": "New Post Title",
+        "content": "Content of the new post",
+        "user": {
+          "id": 1,
+          "username": "user1"
+        },
+        "comments": [],
+        "tags": [],
+        "date_created": "2024-06-27"
+      }
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response** 401 Unauthorized:
 
      ```json
      {
@@ -887,80 +922,99 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-   - **Failure Response** (HTTP 400):
+   - **Failure Response** 400 Bad Request:
 
      ```json
-     {
-       "error": "Validation errors"
-     }
+      {
+        "errors": {
+          "title": ["Title must be at least 5 characters"]
+        }
+      }
      ```
 
-4. **Update Post**
+5. **Update Post**
    - **HTTP Verb**: PUT/PATCH
    - **Route Path**: `/posts/<int:id>`
-   - **Required Header**:
-
-     ```txt
-     Authorization: Bearer <token>
-     ```
+   - **Required Header**: `Authorization: Bearer <token>`
+   - Updates an existing post in the database. Requires that the user is the owner of the post or an admin
 
    - **Required Body Data**:
 
      ```json
-     {
-       "title": "string",
-       "content": "string"
-     }
+      {
+        "title": "Updated Post Title",
+        "content": "Updated content of the post"
+      }
      ```
 
-   - **Success Response** (HTTP 200):
+   - **Success Response** 200 OK:
   
      ```json
-     {
-       "id": 1,
-       "title": "string",
-       "content": "string",
-       "user_id": 1,
-       "date_created": "date"
-     }
+      {
+        "id": 1,
+        "title": "Updated Post Title",
+        "content": "Updated content of the post",
+        "user": {
+          "id": 1,
+          "username": "user1"
+        },
+        "comments": [],
+        "tags": [],
+        "date_created": "2024-06-27"
+      }
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response** 403 Forbidden:
 
      ```json
-     {
-       "error": "Unauthorized"
-     }
+      {
+        "error": "You must be the owner of the resource or an admin to access this resource"
+      }
      ```
 
-   - **Failure Response** (HTTP 400):
+   - **Failure Response** 400 Bad Request:
 
      ```json
-     {
-       "error": "Validation errors"
-     }
+      {
+        "errors": {
+          "title": ["Title must be at least 5 characters"]
+        }
+      }
      ```
 
-5. **Delete Post**
+   - **Failure Response** 401 Unauthorized:
+
+     ```json
+      {
+        "errors": "Missing Authorization header"
+      }
+     ```
+
+6. **Delete Post**
    - **HTTP Verb**: DELETE
    - **Route Path**: `/posts/<int:id>`
-   - **Required Header**:
+   - **Required Header**: `Authorization: Bearer <token>`
+   - Deletes a post from the database. Requires that the user is the owner of the post or an admin
 
-     ```txt
-     Authorization: Bearer <token>
-     ```
-
-   - **Success Response** (HTTP 204):
+   - **Success Response** 204 No Content:
 
      ```json
      {}
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response** 403 Forbidden:
 
      ```json
      {
-       "error": "Unauthorized"
+       "error": "You must be the owner of the resource or an admin to access this resource"
+     }
+     ```
+
+   - **Failure Response** 401 Unauthorized:
+
+     ```json
+     {
+       "error": "Missing Authorization Header"
      }
      ```
 

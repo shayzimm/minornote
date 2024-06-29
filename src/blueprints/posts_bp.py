@@ -25,12 +25,15 @@ def all_posts():
     Returns:
     A JSON response containing all posts.
     """
-    # Create a SQLAlchemy query to select all posts
-    # selects all records from the posts table
-    stmt = db.select(Post)
-    posts = db.session.scalars(stmt).all()
-    # Serialize the list of posts and return as JSON
-    return jsonify(PostSchema(many=True).dump(posts))
+    try:
+        # Create a SQLAlchemy query to select all posts
+        # selects all records from the posts table
+        stmt = db.select(Post)
+        posts = db.session.scalars(stmt).all()
+        # Serialize the list of posts and return as JSON
+        return jsonify(PostSchema(many=True).dump(posts)), 200
+    except Exception as e:
+        return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
 
 # Get one post (R)
 @posts_bp.route('/<int:id>', methods=['GET'])
@@ -47,11 +50,14 @@ def one_post(id):
     Returns:
     A JSON response containing the requested post.
     """
-    # Retrieve a single post by ID
-    # If the record is not found, it raises a 404 error
-    post = db.get_or_404(Post, id)
-    # Serialize the post and return as JSON
-    return jsonify(PostSchema().dump(post))
+    try:
+        # Retrieve a single post by ID
+        # If the record is not found, it raises a 404 error
+        post = db.get_or_404(Post, id)
+        # Serialize the post and return as JSON
+        return jsonify(PostSchema().dump(post)), 200
+    except Exception as e:
+        return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
 
 # Get all posts by User
 @posts_bp.route('/user/<int:user_id>', methods=['GET'])
@@ -68,13 +74,12 @@ def posts_by_user(user_id):
     Returns:
     A JSON response containing all posts by the specified user.
     """
-    # Retrieve all posts by a specific user
-    # If the user does not exist, it raises a 404 error
-    user = db.get_or_404(User, user_id)
-    # Use the relationship to get all posts associated with the user
-    posts = user.posts
-    # Serialize the list of posts and return as JSON
-    return jsonify(PostSchema(many=True).dump(posts))
+    try:
+        user = db.get_or_404(User, user_id)
+        posts = user.posts
+        return jsonify(PostSchema(many=True).dump(posts)), 200
+    except Exception as e:
+        return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
 
 # Create a new post (C)
 @posts_bp.route('/', methods=['POST'])
@@ -92,24 +97,22 @@ def create_post():
     A JSON response containing the newly created post.
     """
     try:
-        # Validate and deserialize the request JSON data
         post_info = PostSchema(only=['title', 'content']).load(request.json, unknown='exclude')
     except ValidationError as err:
-        # Return validation errors as JSON with status 400
         return jsonify(err.messages), 400
 
-    # Create a new Post instance
-    post = Post(
-        title=post_info['title'],
-        content=post_info.get('content', ''),
-        user_id=get_jwt_identity(),
-        date_created=date.today()
-    )
-    # Add the new post to the session and commit to the database
-    db.session.add(post)
-    db.session.commit()
-    # Serialize the new post and return as JSON with status 201
-    return jsonify(PostSchema().dump(post)), 201
+    try:
+        post = Post(
+            title=post_info['title'],
+            content=post_info.get('content', ''),
+            user_id=get_jwt_identity(),
+            date_created=date.today()
+        )
+        db.session.add(post)
+        db.session.commit()
+        return jsonify(PostSchema().dump(post)), 201
+    except Exception as e:
+        return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
 
 # Update a post (U)
 @posts_bp.route('/<int:id>', methods=['PUT', 'PATCH'])
@@ -126,23 +129,22 @@ def update_post(id):
     Returns:
     A JSON response containing the updated post.
     """
-    # Retrieve the post to be updated by ID
-    post = db.get_or_404(Post, id)
-    authorize_owner(post, 'post')
     try:
-        # Validate and deserialize the request JSON data
+        post = db.get_or_404(Post, id)
+        authorize_owner(post, 'post')
         post_info = PostSchema(only=['title', 'content']).load(request.json, unknown='exclude')
     except ValidationError as err:
-        # Return validation errors as JSON with status 400
         return jsonify(err.messages), 400
+    except Exception as e:
+        return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
 
-    # Update post attributes if provided
-    post.title = post_info.get('title', post.title)
-    post.content = post_info.get('content', post.content)
-    # Commit the changes to the database
-    db.session.commit()
-    # Serialize the updated post and return as JSON
-    return jsonify(PostSchema().dump(post))
+    try:
+        post.title = post_info.get('title', post.title)
+        post.content = post_info.get('content', post.content)
+        db.session.commit()
+        return jsonify(PostSchema().dump(post)), 200
+    except Exception as e:
+        return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
 
 # Delete a post (D)
 @posts_bp.route('/<int:id>', methods=['DELETE'])
@@ -159,11 +161,11 @@ def delete_post(id):
     Returns:
     An empty response with status 204.
     """
-    # Retrieve the post to be deleted by ID
-    post = db.get_or_404(Post, id)
-    authorize_owner(post, 'post')
-    # Delete the post from the database
-    db.session.delete(post)
-    db.session.commit()
-    # Return an empty response with status 204
-    return {}, 204
+    try:
+        post = db.get_or_404(Post, id)
+        authorize_owner(post, 'post')
+        db.session.delete(post)
+        db.session.commit()
+        return {}, 204
+    except Exception as e:
+        return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
