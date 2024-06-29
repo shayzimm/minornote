@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow import ValidationError
 from models.comment import Comment, CommentSchema
+from models.user import User
 from auth import admin_or_owner_only, owner_only
 from init import db
 
@@ -62,6 +63,25 @@ def get_comments(post_id):
     """
     # Create a SQLAlchemy query to filter comments by post_id
     comments = Comment.query.filter_by(post_id=post_id).all()
+    # Serialize the list of comments and return as JSON
+    return jsonify(CommentSchema(many=True).dump(comments)), 200
+
+# Route to get all comments by a specific user (R)
+@comments_bp.route('/user/<int:user_id>', methods=['GET'])
+@admin_or_owner_only(User, 'user_id')
+def comments_by_user(user_id):
+    """
+    Retrieves all comments by a specific user.
+    Requires JWT authentication.
+
+    Args:
+        user_id (int): ID of the user to get comments for.
+
+    Returns:
+        JSON response containing all comments made by the user.
+    """
+    # Create a SQLAlchemy query to filter comments by user_id
+    comments = Comment.query.filter_by(user_id=user_id).all()
     # Serialize the list of comments and return as JSON
     return jsonify(CommentSchema(many=True).dump(comments)), 200
 
