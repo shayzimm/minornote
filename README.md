@@ -4,10 +4,15 @@
 
 **MinorNote** is a microblogging platform API that provides functionality for user authentication, blog post management, commenting, and tagging. It is built using Flask and SQLAlchemy, and it aims to offer a secure and scalable solution for microblogging needs.
 
+## GitHub Repo
+
+[MinorNote](https://github.com/shayzimm/minornote)
+
 ## Table of Contents
 
 - [MinorNote](#minornote)
   - [Introduction](#introduction)
+  - [GitHub Repo](#github-repo)
   - [Table of Contents](#table-of-contents)
     - [R1: Problem and Solution](#r1-problem-and-solution)
     - [R2: Task Allocation and Tracking](#r2-task-allocation-and-tracking)
@@ -1023,11 +1028,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
 1. **Create Comment**
    - **HTTP Verb**: POST
    - **Route Path**: `/posts/<int:post_id>/comments`
-   - **Required Header**:
-
-     ```txt
-     Authorization: Bearer <token>
-     ```
+   - **Required Header**: `Authorization: Bearer <token>
 
    - **Required Body Data**:
 
@@ -1037,7 +1038,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-   - **Success Response** (HTTP 201):
+   - **Success Response** 201 Created:
 
      ```json
      {
@@ -1049,7 +1050,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response** 403 Forbidden Request:
 
      ```json
      {
@@ -1057,7 +1058,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-   - **Failure Response** (HTTP 400):
+   - **Failure Response** 400 Unauthorized:
 
      ```json
      {
@@ -1068,13 +1069,9 @@ Please also see the [help documentation](docs/help.md) for more details on getti
 2. **Get All Comments on a Post**
    - **HTTP Verb**: GET
    - **Route Path**: `/posts/<int:post_id>/comments`
-   - **Required Header**:
+   - **Required Header**: `Authorization: Bearer <token>`
 
-     ```txt
-     Authorization: Bearer <token>
-     ```
-
-   - **Success Response** (HTTP 200):
+   - **Success Response** 200 OK:
 
      ```json
      [
@@ -1091,7 +1088,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      ]
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response** 403 Forbidden:
 
      ```json
      {
@@ -1099,14 +1096,40 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-3. **Update Comment**
+3. **Get All Comments by a User**
+   - **HTTP Verb**: GET
+   - **Route Path**: `/comments/user/<int:user_id>`
+   - **Required Header**: `Authorization: Bearer <token>` (Admin or owner only)
+
+   - **Success Response** 200 OK:
+
+     ```json
+     [
+       {
+         "id": 1,
+         "content": "string",
+         "user": {
+           "id": 1,
+           "username": "string"
+         },
+         "date_created": "date"
+       },
+       ...
+     ]
+     ```
+
+   - **Failure Response** 403 Forbidden:
+
+     ```json
+     {
+       "error": "Unauthorized"
+     }
+     ```
+
+4. **Update Comment**
    - **HTTP Verb**: PUT/PATCH
    - **Route Path**: `/posts/<int:post_id>/comments/<int:comment_id>`
-   - **Required Header**:
-
-     ```txt
-     Authorization: Bearer <token>
-     ```
+   - **Required Header**: `Authorization: Bearer <token>` (Owner only)
 
    - **Required Body Data**:
 
@@ -1116,7 +1139,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-   - **Success Response** (HTTP 200):
+   - **Success Response** 200 OK:
 
      ```json
      {
@@ -1124,7 +1147,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response** 403 Forbidden:
 
      ```json
      {
@@ -1132,7 +1155,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-   - **Failure Response** (HTTP 400):
+   - **Failure Response** 400 Unauthorized:
 
      ```json
      {
@@ -1140,16 +1163,12 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-4. **Delete Comment**
+5. **Delete Comment**
    - **HTTP Verb**: DELETE
    - **Route Path**: `/posts/<int:post_id>/comments/<int:comment_id>`
-   - **Required Header**:
+   - **Required Header**: `Authorization: Bearer <token>` (Admin or owner only)
 
-     ```txt
-     Authorization: Bearer <token>
-     ```
-
-   - **Success Response** (HTTP 200):
+   - **Success Response** 200 OK:
 
      ```json
      {
@@ -1157,7 +1176,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response** 403 Forbidden:
 
      ```json
      {
@@ -1170,13 +1189,9 @@ Please also see the [help documentation](docs/help.md) for more details on getti
 1. **Get All Tags**
    - **HTTP Verb**: GET
    - **Route Path**: `/tags`
-   - **Required Header**:
+   - **Required Header**: `Authorization: Bearer <token>`
 
-     ```txt
-     Authorization: Bearer <token>
-     ```
-
-   - **Success Response** (HTTP 200):
+   - **Success Response** 200 OK:
 
      ```json
      [
@@ -1188,7 +1203,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      ]
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response** 403 Forbidden:
 
      ```json
      {
@@ -1199,11 +1214,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
 2. **Create Tag**
    - **HTTP Verb**: POST
    - **Route Path**: `/tags`
-   - **Required Header**:
-
-     ```txt
-     Authorization: Bearer <token>
-     ```
+   - **Required Header**: `Authorization: Bearer <token>`
 
    - **Required Body Data**:
 
@@ -1213,7 +1224,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-   - **Success Response** (HTTP 201):
+   - **Success Response** 201 Created:
 
      ```json
      {
@@ -1222,7 +1233,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response** 403 Forbidden:
 
      ```json
      {
@@ -1233,11 +1244,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
 3. **Update Tag**
    - **HTTP Verb**: PUT/PATCH
    - **Route Path**: `/tags/<int:tag_id>`
-   - **Required Header**:
-
-     ```txt
-     Authorization: Bearer <token>
-     ```
+   - **Required Header**: `Authorization: Bearer <token>` (Admin only)
 
    - **Required Body Data**:
 
@@ -1247,7 +1254,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-   - **Success Response** (HTTP 200):
+   - **Success Response** 200 OK:
 
      ```json
      {
@@ -1255,24 +1262,20 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response** 403 Forbidden:
 
      ```json
      {
-       "error": "Validation errors"
+       "error": "Unauthorized"
      }
      ```
 
 4. **Delete Tag**
    - **HTTP Verb**: DELETE
    - **Route Path**: `/tags/<int:tag_id>`
-   - **Required Header**:
+   - **Required Header**: `Authorization: Bearer <token>`
 
-     ```txt
-     Authorization: Bearer <token>
-     ```
-
-   - **Success Response** (HTTP 200):
+   - **Success Response** 200:
 
      ```json
      {
@@ -1280,7 +1283,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      }
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response** 403 Forbidden:
 
      ```json
      {
@@ -1291,13 +1294,9 @@ Please also see the [help documentation](docs/help.md) for more details on getti
 5. **Get Posts by Tag**
    - **HTTP Verb**: GET
    - **Route Path**: `/tags/<int:tag_id>/posts`
-   - **Required Header**:
+   - **Required Header**: `Authorization: Bearer <token>`
 
-     ```txt
-     Authorization: Bearer <token>
-     ```
-
-   - **Success Response** (HTTP 200):
+   - **Success Response** 200 OK:
 
      ```json
      [
@@ -1321,7 +1320,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      ]
      ```
 
-   - **Failure Response** (HTTP 403):
+   - **Failure Response** 403 Forbidden:
 
      ```json
      {
