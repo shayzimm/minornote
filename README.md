@@ -328,8 +328,6 @@ SQLAlchemy allows you to define custom data types and extend the functionality o
 
 ### R6: Entity Relationship Diagram (ERD)
 
-**Entity Relationship Diagram (ERD)**
-
 The MinorNote ERD can be found [here](docs/minornote_erd.pdf).
 
 **Normalisation Explanation:**
@@ -645,7 +643,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      ]
      ```
 
-   - **Failure Response**: 
+   - **Failure Response**:
    - 403 Forbidden:
 
      ```json
@@ -763,7 +761,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
      {}
      ```
 
-   - **Failure Response**: 
+   - **Failure Response**:
    - 403 Forbidden:
 
      ```json
@@ -1030,7 +1028,7 @@ Please also see the [help documentation](docs/help.md) for more details on getti
 1. **Create Comment**
    - **HTTP Verb**: POST
    - **Route Path**: `/posts/<int:post_id>/comments`
-   - **Required Header**: `Authorization: Bearer <token>
+   - **Required Header**: `Authorization: Bearer <token>`
 
    - **Required Body Data**:
 
@@ -1384,11 +1382,11 @@ Can be found [here](docs/help.md)
 6. Marshmallow. (n.d.). Marshmallow Documentation. Retrieved from [Marshmallow Documentation](https://marshmallow.readthedocs.io/en/stable/).
 7. PostgreSQL. (n.d.). PostgreSQL Documentation. Retrieved from [PostgreSQL Documentation](https://www.postgresql.org/docs/).
 8. Bcrypt. (n.d.). Bcrypt Documentation. Retrieved from [Bcrypt Documentation](https://pypi.org/project/bcrypt/).
-9.  Flask-Bcrypt. (n.d.). Flask-Bcrypt Documentation. Retrieved from [Flask-Bcrypt Documentation](https://flask-bcrypt.readthedocs.io/en/1.0.1/).
+9. Flask-Bcrypt. (n.d.). Flask-Bcrypt Documentation. Retrieved from [Flask-Bcrypt Documentation](https://flask-bcrypt.readthedocs.io/en/1.0.1/).
 10. Flask-SQLAlchemy. (n.d.). Flask-SQLAlchemy Documentation. Retrieved from [Flask-SQLAlchemy Documentation](https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/).
 11. Atlassian. (n.d.). Kanban Board Overview. Retrieved from [Kanban Board Overview](https://www.atlassian.com/agile/kanban).
 12. RESTful API. (n.d.). REST API Best Practices. Retrieved from [REST API Best Practices](https://restfulapi.net/).
 13. Insomnia. (n.d.). Insomnia Documentation. Retrieved from [Insomnia Documentation](https://docs.insomnia.rest/).
 14. Google Cloud. (n.d.). API Design Guide. Retrieved from [Google Cloud API Design Guide](https://cloud.google.com/apis/design).
 15. Grinberg, M. (n.d.). Flasky. Retrieved from [Flasky](https://github.com/miguelgrinberg/flasky).
-16. Python.org. (n.d.). PEP 8 – Style Guide for Python Code. Retrieved from PEP 8 – Style Guide for Python Code(https://peps.python.org/pep-0008/)
+16. Python.org. (n.d.). PEP 8 – Style Guide for Python Code. Retrieved from [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/)

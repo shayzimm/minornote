@@ -22,7 +22,7 @@ def index():
     Root endpoint of the application.
     Returns a welcome message.
     """
-    return "MinorNote"
+    return "Welcome to MinorNote"
 
 # Error handler for 404 and 405 errors
 @app.errorhandler(405)
